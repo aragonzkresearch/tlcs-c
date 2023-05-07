@@ -24,3 +24,8 @@ The APIs can be divided in routines for:
 ## Demo
 The source code contains a file * `example/tlcs.c` implementing a demo simulation of a TLCS activity using the routines in the library. 
  The demo is supposed to simulate locally a TLCS protocol consisting of proving, verification, aggregation and inversion phases.
+## Contacts
+
+Vincenzo Iovino (vincenzo@aragon.org)
+Aragon ZK Research team: [azkr]
+[azkr]: https://research.aragon.org/
