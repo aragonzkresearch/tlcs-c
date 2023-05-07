@@ -1,9 +1,7 @@
 # Time Lock Cryptographic Service (TLCS) based on League of Entropy (a.k.a. drand)
 ## Overview
-The repository provides implementation of TLCS described as Protocol 2 in this [note][hackmd].
-The implementation is based on the [mcl][mcl] library By Shigeo Mitsunari/
-[hackmd]: https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ
-[mcl]: https://github.com/herumi/mcl/
+The repository provides implementation of TLCS described as Protocol 2 in this [note](https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ).
+The implementation is based on the [mcl](https://github.com/herumi/mcl/) library By Shigeo Mitsunari/
 ## Installation
 ```bash
 git clone https://github.com/herumi/mcl.git
@@ -28,5 +26,4 @@ The source code contains a file * `example/tlcs.c` implementing a demo simulatio
 
 Vincenzo Iovino (vincenzo@aragon.org)
 
-[Aragon ZK Research team]: [azkr]
-[azkr]: https://research.aragon.org/
+[Aragon ZK Research team]:(https://research.aragon.org/)
