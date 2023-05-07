@@ -26,4 +26,4 @@ The source code contains a file * `example/tlcs.c` implementing a demo simulatio
 
 Vincenzo Iovino (vincenzo@aragon.org)
 
-Aragon ZK Research Team: [Aragon ZK Research team]:(https://research.aragon.org/)
+Aragon ZK Research Team: (https://research.aragon.org/)
