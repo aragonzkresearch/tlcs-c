@@ -1,7 +1,6 @@
 // The TLCS system was initially described here:
 // https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ
 // 
-// For LICENSE check https://github.com/aragonzkresearch/ovote/blob/master/LICENSE
 // Vincenzo Iovino, 2023, Aragon ZK Research
 #include <stdio.h>
 #include <string.h>
@@ -11,6 +10,7 @@
 #include "pairing.h"
 #include "cyclic_group.h"
 #include "simulated_loe.h"
+#include "err.h"
 #if _DEBUG_ ==1
 #include <time.h>
 #endif
@@ -51,7 +51,18 @@ end = clock();
  time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 printf("time spent by prover on a single party: %fs\n",time_spent);
 #endif
+
+#if PK_SIMULATED == 1 // in this case we are generating the signature by ourself because we simulated the public key and we know the corresponding secret key
 generate_loe_signature(&Signature,round);
+#else // in this case we must set signature Signature to a real LOE's signature
+{
+const  char *sigStr="9544ddce2fdbe8688d6f5b4f98eed5d63eee3902e7e162050ac0f45905a55657714880adabe3c3096b92767d886567d0"; // this is the signature for round 1 of the unchained chain
+mclBn_setETHserialization(1);
+ASSERT(!(mclBnG1_setStr(&Signature, sigStr, strlen(sigStr), MCLBN_IO_SERIALIZE_HEX_STR)));
+mclBn_setETHserialization(0);
+}
+#endif
+
 #if _DEBUG_ == 1
 begin = clock();
 #endif

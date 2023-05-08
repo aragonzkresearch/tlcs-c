@@ -1,7 +1,6 @@
 // The TLCS system was initially described here:
 // https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ
 // 
-// For LICENSE check https://github.com/aragonzkresearch/ovote/blob/master/LICENSE
 // Vincenzo Iovino, 2023, Aragon ZK Research
 #ifndef _TLCS_H_
 #define _TLCS_H_ 1

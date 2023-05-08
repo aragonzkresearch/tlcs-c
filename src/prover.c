@@ -1,7 +1,6 @@
 // The TLCS system was initially described here:
 // https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ
 // 
-// For LICENSE check https://github.com/aragonzkresearch/ovote/blob/master/LICENSE
 // Vincenzo Iovino, 2023, Aragon ZK Research
 #include <stdint.h>
 #include <stdio.h>
@@ -65,14 +64,23 @@ SHA256(buf_for_serializing,length,buf);
 return 0;
 
 }
-static unsigned char tmp_bytes[8];
-inline static void round_to_bytes(unsigned char *bytes,uint64_t *round){
-memcpy(bytes,round,sizeof(uint64_t));
-}
+//static unsigned char tmp_bytes[8];
+//inline static void round_to_bytes(unsigned char *bytes,uint64_t *round){
+//memcpy(bytes,round,sizeof(uint64_t));
+//}
 
 inline void HashRoundToG1(G1 *g1,uint64_t *round){
-round_to_bytes(&tmp_bytes[0],round);
-G1_hashAndMapTo(g1,&tmp_bytes[0],sizeof(uint64_t));
+
+unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH];
+static SHA256_CTX ctx;
+uint64_t round_big_endian = __builtin_bswap64 (*round);
+
+SHA256_Init(&ctx);
+SHA256_Update(&ctx, (unsigned char*)&round_big_endian, 8);
+SHA256_Final(buf_for_hashing, &ctx);
+mclBnG1_hashAndMapTo(g1, (void *)buf_for_hashing, 32);
+//round_to_bytes(&tmp_bytes[0],round);
+//G1_hashAndMapTo(g1,&tmp_bytes[0],sizeof(uint64_t));
 }
 
 
@@ -120,8 +128,8 @@ G2_mul(&P->pi.C[i][1].T,&G2Generator,&t[i][1]);
 #if PARALLELISM == 1
 }
 #endif
-HashRoundToG1(&HashedRound,&round); // HashedRound=SHA256(round)
-pairing(&e,&HashedRound,&SIM_PK_LOE); // compute e=e(H(round),SIM_PK_LOE)
+HashRoundToG1(&HashedRound,&round); // HashedRound=MAP_TO_POINT(SHA256(BIG_ENDIAN(round)))
+pairing(&e,&HashedRound,&PK_LOE); // compute e=e(HashedRound,PK_LOE)
 
 #if PARALLELISM == 1
 for (i=0;i<NUM_REPETITIONS;i++) GT_copy(&e_parallel_safe[i],&e);

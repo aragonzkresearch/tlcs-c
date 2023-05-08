@@ -1,7 +1,6 @@
 // The TLCS system was initially described here:
 // https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ
 // 
-// For LICENSE check https://github.com/aragonzkresearch/ovote/blob/master/LICENSE
 // Vincenzo Iovino, 2023, Aragon ZK Research
 #include <stdint.h>
 #include <stdio.h>
@@ -49,8 +48,8 @@ CycGrpG GTmp;
 CycGrpZp s;
 #endif
 int ret=0;
-HashRoundToG1(&HashedRound,&round); // HashedRound=SHA256(round)
-pairing(&e,&HashedRound,&SIM_PK_LOE); // compute e=e(H(round),SIM_PK_LOE)
+HashRoundToG1(&HashedRound,&round); // HashedRound=MAP_TO_POINT(SHA256(BIG_ENDIAN(round)))
+pairing(&e,&HashedRound,&PK_LOE); // compute e=e(HashedRound,PK_LOE)
 
 ComputeChallenge(Challenge,PK,pi->C,&round);
 #if PARALLELISM == 1
