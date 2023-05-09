@@ -16,7 +16,7 @@ extern unsigned char buf_for_serializing[1024];
 #if CYC_GRP_BLS_G1==1
 #define SERIALIZATION_CYCGRPZP_RATIO 1
 #else
-#define SERIALIZATION_CYCGRPZP_RATIO 3
+#define SERIALIZATION_CYCGRPZP_RATIO 8
 #endif
 extern unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO]; 
 // The constant 3 above has the following meaning.
