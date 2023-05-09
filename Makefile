@@ -1,6 +1,6 @@
 CC=g++
 CCOPT=-Wall -fopenmp -lpthread 
-DFLAGS=-DPARALLELISM=0 -D_DEBUG_=1
+DFLAGS=-DPARALLELISM=0 -D_DEBUG_=1 -DCYC_GRP_BLS_G1=0
 MCL_INCLUDE_PATH=mcl/include
 IOPT=-I $(MCL_INCLUDE_PATH) -I ./include
 LDFLAGS=-lcrypto mcl/lib/libmclbn384_256.a mcl/lib/libmcl.a 

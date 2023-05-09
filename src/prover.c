@@ -15,9 +15,9 @@
 
 #define get_bit(a,n) ( (a[n/8] & (((unsigned char)1U) << (n%8))) !=0  )
 unsigned char buf_for_serializing[1024]; 
-unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH];
+unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO]; 
 #if PARALLELISM == 1 
-unsigned char buf_for_hashing_parallel_safe[NUM_REPETITIONS][SHA256_DIGEST_LENGTH]; 
+unsigned char buf_for_hashing_parallel_safe[NUM_REPETITIONS][SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO]; 
 #endif 
 static SHA256_CTX ctx;
 inline  void ComputeChallenge(bool Challenge[],CycGrpG *PK,CommitmentTuple C[][NUM_COLUMNS],uint64_t *round){
@@ -36,14 +36,16 @@ inline void XOR(unsigned char y[], CycGrpZp *sk, unsigned char sha256_digest[]){
 int i;
 #if PARALLELISM == 1
 unsigned char buf_parallel_safe[1024];
-int length=CycGrpZp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),sk); 
-ASSERT(length);
-for(i=0; i<SHA256_DIGEST_LENGTH;i++)
+//int length=CycGrpZp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),sk); 
+//ASSERT(length);
+CycGrpZp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),sk); 
+for(i=0; i<SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATION;i++)
        y[i] = (unsigned char)(buf_parallel_safe[i] ^ sha256_digest[i]);
 #else
-int length=CycGrpZp_serialize(buf_for_serializing,sizeof(buf_for_serializing),sk); 
-ASSERT(length);
-for(i=0; i<SHA256_DIGEST_LENGTH;i++)
+//int length=CycGrpZp_serialize(buf_for_serializing,sizeof(buf_for_serializing),sk); 
+//ASSERT(length);
+CycGrpZp_serialize(buf_for_serializing,sizeof(buf_for_serializing),sk); 
+for(i=0; i<SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO;i++)
        y[i] = (unsigned char)(buf_for_serializing[i] ^ sha256_digest[i]);
 #endif
 }
@@ -54,12 +56,33 @@ unsigned char buf_parallel_safe[1024];
 int length=GT_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),e); // with BLS12-381 pairing length should 576 bytes
 ASSERT(length);
 if (!length) return 1;
+#if CYC_GRP_BLS_G1 == 1
 SHA256(buf_parallel_safe,length,buf);
+#else
+buf_for_serializing[length]=0;
+SHA256(buf_parallel_safe,length,buf);
+buf_for_serializing[length]=1;
+SHA256(buf_parallel_safe,length,buf+SHA256_DIGEST_LENGTH);
+buf_for_serializing[length]=2;
+SHA256(buf_parallel_safe,length,buf+2*SHA256_DIGEST_LENGTH);
+#endif
+
 #else
 int length=GT_serialize(buf_for_serializing,sizeof(buf_for_serializing),e); // with BLS12-381 pairing length should 576 bytes
 ASSERT(length);
 if (!length) return 1;
+
+#if CYC_GRP_BLS_G1 == 1
 SHA256(buf_for_serializing,length,buf);
+#else
+buf_for_serializing[length]=0;
+SHA256(buf_for_serializing,length,buf);
+buf_for_serializing[length]=1;
+SHA256(buf_for_serializing,length,buf+SHA256_DIGEST_LENGTH);
+buf_for_serializing[length]=2;
+SHA256(buf_for_serializing,length,buf+2*SHA256_DIGEST_LENGTH);
+#endif 
+
 #endif
 return 0;
 
@@ -109,7 +132,13 @@ for (i=0;i<NUM_REPETITIONS;i++) CycGrpZp_copy(&sk_parallel_safe[i],&P->sk);
 #pragma omp for
 #endif
 for (i=0;i<NUM_REPETITIONS;i++){ 
+#if CYC_GRP_BLS_G1 == 1
+#else 
+CycGrpZp_new(&sk[i][0]); 
+CycGrpZp_new(&sk[i][1]); 
+#endif
 CycGrpZp_setRand(&sk[i][0]);
+
 
 Zp_setRand(&t[i][0]);
 Zp_setRand(&t[i][1]);
@@ -119,8 +148,15 @@ CycGrpZp_sub(&sk[i][1],&sk_parallel_safe[i], &sk[i][0]);
 #else
 CycGrpZp_sub(&sk[i][1],&P->sk, &sk[i][0]);
 #endif
+#if CYC_GRP_BLS_G1 == 1
 CycGrpG_mul(&P->pi.C[i][0].PK,&CycGrpGenerator,&sk[i][0]); // PK[i][0]=g^{sk[i][0]}
 CycGrpG_mul(&P->pi.C[i][1].PK,&CycGrpGenerator,&sk[i][1]);
+#else 
+CycGrpG_new(&P->pi.C[i][0].PK); 
+CycGrpG_new(&P->pi.C[i][1].PK); 
+CycGrpG_mul(&P->pi.C[i][0].PK,CycGrpGenerator,&sk[i][0]); // PK[i][0]=g^{sk[i][0]}
+CycGrpG_mul(&P->pi.C[i][1].PK,CycGrpGenerator,&sk[i][1]);
+#endif
 
 G2_mul(&P->pi.C[i][0].T,&G2Generator,&t[i][0]); // T[i][0]=g2^{t[i][0]} 
 G2_mul(&P->pi.C[i][1].T,&G2Generator,&t[i][1]);
@@ -173,11 +209,18 @@ ComputeChallenge(Challenge,&P->PK,P->pi.C,&round);
 #pragma omp for
 #endif
 for (i=0;i<NUM_REPETITIONS;i++){
+
+#if CYC_GRP_BLS_G1 == 1
+#else
+CycGrpZp_new(&P->pi.O[i].sk);
+#endif
+
 CycGrpZp_copy(&P->pi.O[i].sk,&sk[i][Challenge[i]]);
 // uncomment this as sanity check
 //if (i==0) CycGrpZp_copy(&P->pi.O[i].t,&t[i+1][Challenge[i]]);
 // else 
- CycGrpZp_copy(&P->pi.O[i].t,&t[i][Challenge[i]]);
+// CycGrpZp_copy(&P->pi.O[i].t,&t[i][Challenge[i]]);
+ Zp_copy(&P->pi.O[i].t,&t[i][Challenge[i]]);
 }
 #if PARALLELISM == 1
 }

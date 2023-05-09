@@ -17,9 +17,14 @@
 #endif
 #define NUM_PARTIES 3
 
+#if CYC_GRP_BLS_G1 == 1
 
-static time_t loe_genesis_time=1677685200;
-static unsigned int loe_period=3;
+#else
+#include <openssl/ec.h>
+#include <openssl/ecdh.h>
+#include <openssl/obj_mac.h>
+#endif
+
 inline static void set_loe_signature(G1 *Signature, const char *sigStr,size_t len) {
 mclBn_setETHserialization(1);
 ASSERT(!(mclBnG1_setStr(Signature, sigStr, len, MCLBN_IO_SERIALIZE_HEX_STR)));
@@ -59,7 +64,17 @@ clock_t begin,end;
 double time_spent;
 #endif
 ASSERT(!pairing_init());
+#if CYC_GRP_BLS_G1 == 1
 ASSERT(!group_init());
+#else
+//ASSERT(!group_init(NID_X9_62_prime256v1));
+printf("For which curve do you want to generate the public keys?\nYou need to insert a valid NID number supported by openssl.\nSee in /usr/include/openssl/obj_mac.h\nExamples:\n\t* 714 for secp256k1\n\t* 415 for prime256v1\nInsert your choice:\n[No checks will be done so if the integer you insert is not valid the behavior will be unpredictable]\n");
+{
+int nid;
+scanf("%d",&nid);
+ASSERT(!group_init(nid));
+}
+#endif 
 generate_loe_publickey();
 
 //round=1954572;
@@ -102,6 +117,11 @@ printf("time spent by verifier on verifying proof of party %d: %fs\n",i,time_spe
 if (ret==0) verified_proof[i]=true;
 else verified_proof[i]=false;
 
+#if CYC_GRP_BLS_G1 == 1
+#else
+CycGrpG_new(&GPK);
+#endif
+
 AggregatePublicKeys(&GPK,P,NUM_PARTIES,verified_proof);
 }
 // uncomment as sanity check tp test a failed inversion (supposes inversion error for party i=3, so set NUM_PARTIES>=4)
@@ -134,8 +154,11 @@ end = clock();
  time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 printf("time spent in inversion for %d parties: %fs\n",NUM_PARTIES,time_spent);
 #endif
+printf("inversion1\n");
 generate_public_key(&Recovered_PK,&gsk);
+printf("inversion2\n");
 if (!CycGrpG_isEqual(&Recovered_PK,&GPK)) { // check that g^{gsk} =GPK 
+printf("inversion3\n");
 #if _DEBUG_ == 1
 printf("Error in inversion for party %d\n",i);
 #endif 

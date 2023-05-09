@@ -15,8 +15,16 @@ GT Z;
 CycGrpZp sktmp;
 CycGrpG GTmp;
 CycGrpZp s[NUM_COLUMNS];
+#if CYC_GRP_BLS_G1 == 1
+#else
+CycGrpG_new(&GTmp);
+CycGrpZp_new(&s[0]);
+CycGrpZp_new(&s[1]);
+CycGrpZp_new(&sktmp);
+#endif
 
 for (i=0;i<NUM_REPETITIONS;i++){ 
+
 CycGrpG_add(&GTmp,&pi->C[i][0].PK,&pi->C[i][1].PK);
 if (!CycGrpG_isEqual(&GTmp,PK)){
 #if _DEBUG_ == 1
@@ -33,8 +41,11 @@ HashGTToBytes(buf_for_hashing,&Z); // buf_for_hashing holds SHA256(Z)
 XOR_Verifier(&s[b],pi->C[i][b].y,buf_for_hashing); // s[b]= y[i][b] XOR SHA256(Z])
 }
 CycGrpZp_add(&sktmp,&s[0],&s[1]);
+#if CYC_GRP_BLS_G1 == 1
 CycGrpG_mul(&GTmp,&CycGrpGenerator,&sktmp);
-
+#else
+CycGrpG_mul(&GTmp,CycGrpGenerator,&sktmp);
+#endif
 if (!CycGrpG_isEqual(&GTmp,PK)) { // check that g^s =PK[i]
 #if _DEBUG_ == 1
 printf("Invert: error2 in repetition %d\n",i);

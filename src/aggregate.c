@@ -22,7 +22,12 @@ CycGrpG_add(GPK,GPK,&P[i].PK);
 }
 int InvertAggregate(CycGrpZp *gsk,TLCSParty P[],size_t num_parties,G1 *Signature,bool verified_proof[]){ // return -1 on success and i for the number of party for which it failed
 unsigned int i,flag=0;
-Zp inverted_sk;
+CycGrpZp inverted_sk;
+#if CYC_GRP_BLS_G1 == 1
+#else
+CycGrpZp_new(&inverted_sk);
+#endif
+
 for (i=0;i<num_parties;i++) if (verified_proof[i]==true)
 {
  if (!Invert(&inverted_sk,&P[i].PK,Signature, &P[i].pi)) { 

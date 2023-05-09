@@ -34,4 +34,15 @@ void  GT_copy(GT *a,GT *b);
 #define pairing(e,g1,g2) (mclBn_pairing(e,g1,g2))
 #define GT_serialize(buf,len,e) (mclBnGT_serialize(buf,len,e))
 #define GT_deserialize(e,buf,len) (mclBnGT_deserialize(e,buf,len))
+extern unsigned char buf_for_serializing[1024];
+inline void Zp_copy(Zp *a,Zp *b){
+#if PARALLELISM == 1
+unsigned char buf_parallel_safe[1024];
+Zp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),b); 
+Zp_deserialize(a, buf_parallel_safe,sizeof(buf_parallel_safe)); 
+#else
+Zp_serialize(buf_for_serializing,sizeof(buf_for_serializing),b); 
+Zp_deserialize(a, buf_for_serializing,sizeof(buf_for_serializing)); 
+#endif
+}
 #endif
