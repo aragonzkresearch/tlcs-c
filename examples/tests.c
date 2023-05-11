@@ -46,14 +46,14 @@ unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH];
 static SHA256_CTX ctx;
 SHA256_Init(&ctx);
 SHA256_Update(&ctx, (unsigned char*)&round_big_endian, 8);
-SHA256_Final(buf_for_hashing, &ctx);
+SHA256_Final(buf_for_hashing, &ctx); // buf_for_hashing=SHA256(round_big_endian);
 //mclBnG1_hashAndMapTo(&HashedMsg, (void *)&msg, 8);
-mclBnG1_hashAndMapTo(&HashedMsg, (void *)buf_for_hashing, 32);
+mclBnG1_hashAndMapTo(&HashedMsg, (void *)buf_for_hashing, 32); // HashedMsg=H(buf_for_hashing) where H is the Hash to Point function for BLS12 group except that the domain is the string dst
 
 }
-	mclBn_pairing(&e1, &sig, &g2);
-	mclBn_pairing(&e2, &HashedMsg, &PK_UNCHAINED_LOE);
-	ret=mclBnGT_isEqual(&e1, &e2);
+	mclBn_pairing(&e1, &sig, &g2); // e1=pairing(sig,g2)
+	mclBn_pairing(&e2, &HashedMsg, &PK_UNCHAINED_LOE); // e2=pairing(HashedMsg,PK_UNCHAINED_LOE)
+	ret=mclBnGT_isEqual(&e1, &e2); // check e1==e2
 printf("verify: %d\n",ret);
 		return 0;
 }

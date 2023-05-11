@@ -39,3 +39,34 @@ GT_serialize(buf_for_serializing,sizeof(buf_for_serializing),b);
 GT_deserialize(a, buf_for_serializing,sizeof(buf_for_serializing)); 
 #endif
 }
+
+char *G2_toHexString(const G2 *g){
+char buf[1024];
+char *s;
+//int len=G2_serialize(buf,1024,g);
+int len=mclBnG2_getStr(buf,1024,g,16);
+if (len==0) return NULL;
+s=(char *)malloc(len+1);
+strncpy(s,buf,len);
+s[len]='\0';
+return s;
+}
+void G2_fromHexString(G2 *g,const char *s){
+//G2_deserialize(g,s,strlen(s));
+mclBnG2_setStr(g,s,strlen(s),16);
+}
+char *Zp_toHexString(const Zp *x){
+char buf[1024];
+char *s;
+//int len=Zp_serialize((unsigned char *)buf,1024,x);
+int len=mclBnFr_getStr(buf,1024,x,16);
+if (len==0) return NULL;
+s=(char *)malloc(len+1);
+strncpy(s,buf,len);
+s[len]='\0';
+return s;
+}
+void Zp_fromHexString(Zp *x,const char *s){
+//Zp_deserialize(x,s,strlen(s));
+mclBnFr_setStr(x,s,strlen(s),16);
+}

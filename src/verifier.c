@@ -120,6 +120,7 @@ CycGrpZp_new(&s);
 HashGTToBytes(buf_for_hashing,&Z[i]); // buf_for_hashing holds SHA256(Z[i])
 XOR_Verifier(&s,pi->C[i][Challenge[i]].y,buf_for_hashing); // s= y[i][Challenge_i] XOR SHA256(Z[i])
 
+
 #if CYC_GRP_BLS_G1 ==1
 CycGrpG_mul(&GTmp,&CycGrpGenerator,&s);
 #else

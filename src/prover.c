@@ -22,10 +22,19 @@ unsigned char buf_for_hashing_parallel_safe[NUM_REPETITIONS][SHA256_DIGEST_LENGT
 static SHA256_CTX ctx;
 inline  void ComputeChallenge(bool Challenge[],CycGrpG *PK,CommitmentTuple C[][NUM_COLUMNS],uint64_t *round){
 int i;
+size_t len;
+char *s;
 // We compute Challenge=SHA256(P->PK,P->pi,CommitmentTuple,round);
 SHA256_Init(&ctx);
+/*
 SHA256_Update(&ctx, (unsigned char*)PK, sizeof(CycGrpG));
 SHA256_Update(&ctx, (unsigned char *)C, sizeof(CommitmentTuple)*NUM_REPETITIONS*NUM_COLUMNS);
+SHA256_Update(&ctx, (unsigned char *)round, sizeof(uint64_t));
+*/
+s=SerializePKandCommitment(PK,C);
+len=strlen(s);
+
+SHA256_Update(&ctx, (unsigned char *)s, len);
 SHA256_Update(&ctx, (unsigned char *)round, sizeof(uint64_t));
 SHA256_Final(buf_for_hashing, &ctx);
 for (i=0;i<NUM_REPETITIONS;i++) Challenge[i]= get_bit(buf_for_hashing,i);
@@ -59,12 +68,13 @@ if (!length) return 1;
 #if CYC_GRP_BLS_G1 == 1
 SHA256(buf_parallel_safe,length,buf);
 #else
-buf_for_serializing[length]=0;
-SHA256(buf_parallel_safe,length,buf);
-buf_for_serializing[length]=1;
-SHA256(buf_parallel_safe,length,buf+SHA256_DIGEST_LENGTH);
-buf_for_serializing[length]=2;
-SHA256(buf_parallel_safe,length,buf+2*SHA256_DIGEST_LENGTH);
+{
+int k;
+for (k=0;k<SERIALIZATION_CYCGRPZP_RATIO;k++){
+buf_parallel_safe[length]=k;
+SHA256(buf_parallel_safe,length,buf+k*SHA256_DIGEST_LENGTH);
+}
+}
 #endif
 
 #else
@@ -75,12 +85,13 @@ if (!length) return 1;
 #if CYC_GRP_BLS_G1 == 1
 SHA256(buf_for_serializing,length,buf);
 #else
-buf_for_serializing[length]=0;
-SHA256(buf_for_serializing,length,buf);
-buf_for_serializing[length]=1;
-SHA256(buf_for_serializing,length,buf+SHA256_DIGEST_LENGTH);
-buf_for_serializing[length]=2;
-SHA256(buf_for_serializing,length,buf+2*SHA256_DIGEST_LENGTH);
+{
+int k;
+for (k=0;k<SERIALIZATION_CYCGRPZP_RATIO;k++){ // we hash the element e so that it has SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO bytes. This is to be able to XOR with the maximum number of bytes that an element of CycGrpZp can contain. 
+buf_for_serializing[length]=k;
+SHA256(buf_for_serializing,length,buf+k*SHA256_DIGEST_LENGTH);
+}
+}
 #endif 
 
 #endif
@@ -142,13 +153,14 @@ CycGrpZp_setRand(&sk[i][0]);
 
 Zp_setRand(&t[i][0]);
 Zp_setRand(&t[i][1]);
-
 #if PARALLELISM == 1
 CycGrpZp_sub(&sk[i][1],&sk_parallel_safe[i], &sk[i][0]);
 #else
 CycGrpZp_sub(&sk[i][1],&P->sk, &sk[i][0]);
 #endif
 #if CYC_GRP_BLS_G1 == 1
+
+
 CycGrpG_mul(&P->pi.C[i][0].PK,&CycGrpGenerator,&sk[i][0]); // PK[i][0]=g^{sk[i][0]}
 CycGrpG_mul(&P->pi.C[i][1].PK,&CycGrpGenerator,&sk[i][1]);
 #else 
@@ -212,10 +224,10 @@ for (i=0;i<NUM_REPETITIONS;i++){
 
 #if CYC_GRP_BLS_G1 == 1
 #else
-CycGrpZp_new(&P->pi.O[i].sk);
+//CycGrpZp_new(&P->pi.O[i].sk);
 #endif
 
-CycGrpZp_copy(&P->pi.O[i].sk,&sk[i][Challenge[i]]);
+//CycGrpZp_copy(&P->pi.O[i].sk,&sk[i][Challenge[i]]);
 // uncomment this as sanity check
 //if (i==0) CycGrpZp_copy(&P->pi.O[i].t,&t[i+1][Challenge[i]]);
 // else 

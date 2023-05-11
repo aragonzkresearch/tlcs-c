@@ -34,7 +34,7 @@ unsigned char y[SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO];
 
 } CommitmentTuple;
 typedef struct{
-CycGrpZp sk;
+//CycGrpZp sk;
 Zp t;
 } OpeningTuple;
 typedef struct {
@@ -60,4 +60,7 @@ void XOR(unsigned char y[], CycGrpZp *sk, unsigned char sha256_digest[]);
 void XOR_Verifier(CycGrpZp *sk, unsigned char HashZ[], unsigned char y[]);
 int HashGTToBytes(unsigned char *buf,GT *e);
 void HashRoundToG1(G1 *g1,uint64_t *round);
+char *SerializePartyOutput(const CycGrpG *PK,const Proof *pi,size_t *size);
+void DeserializePartyOutput(CycGrpG *PK,Proof *pi,const char *s,size_t *);
+char *SerializePKandCommitment(const CycGrpG *PK,const CommitmentTuple C[][NUM_COLUMNS]);
 #endif 

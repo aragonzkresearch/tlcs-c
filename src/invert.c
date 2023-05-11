@@ -55,7 +55,9 @@ return 1;
 else {
 CycGrpZp_copy(sk,&sktmp);
 #if _DEBUG_ == 1
+#if _DEBUG_VERBOSE_ == 1
 printf("party' sk found out in repetition %d\n",i);
+#endif 
 #endif
 return 0;
 }

@@ -21,8 +21,11 @@
 //typedef struct {
 //mclBnG1 g1;
 //} CycGrpG;
-typedef mclBnG1 CycGrpG;
-typedef mclBnFr CycGrpZp;
+//typedef mclBnG1 CycGrpG;
+#define CycGrpG mclBnG1
+#define CycGrpZp mclBnFr
+//typedef mclBnG1 CycGrpG;
+//typedef mclBnFr CycGrpZp;
 int group_init(void);
 extern CycGrpG CycGrpGenerator;
 #else
@@ -36,8 +39,12 @@ typedef struct { EC_POINT *P;} CycGrpG;
 typedef struct { BIGNUM *B; } CycGrpZp;
 extern CycGrpZp Order;
 extern int Order_bits;
-inline void CycGrpG_deserialize(CycGrpG *g,const unsigned char *buf,size_t maxBufSize) { EC_POINT_hex2point(ec_group,(const char*)buf,g->P,NULL); }
-inline void CycGrpG_serialize(unsigned char *buf,size_t maxBufSize,const CycGrpG *g) { strcpy((char *)buf,(char *)EC_POINT_point2hex(ec_group,g->P,POINT_CONVERSION_COMPRESSED,NULL)); }
+// NOTE: deserialize and serialize bot for CycGrpG and CycGrpZp may behave differently accordingly on whether CYC_GRG_BLS_G1= 1 or 0. 
+// Currently _serialize functions work exactly as _toHexStr functions but we keep it separate in view of future changes (e.g., serialize to binary to improve efficiency).
+inline void CycGrpG_deserialize(CycGrpG *g,const unsigned char *buf,size_t maxBufSize) { EC_POINT_hex2point(ec_group,(const char*)buf,g->P,NULL); } 
+inline void CycGrpG_serialize(unsigned char *buf,size_t maxBufSize,const CycGrpG *g) { 
+strcpy((char *)buf,(char *)EC_POINT_point2hex(ec_group,g->P,POINT_CONVERSION_COMPRESSED,NULL)); 
+}
 inline int CycGrpZp_isEqual(const CycGrpZp *x,const CycGrpZp *y) { return !BN_cmp(x->B,y->B); }
 // TODO: switch the return values (this will affect the code of prover, verifier, aggregator and inversion)
 inline void CycGrpZp_add(CycGrpZp *z,const CycGrpZp *x,const CycGrpZp *y) { BN_mod_add(z->B,x->B,y->B,Order.B,bn_ctx); }
@@ -54,8 +61,13 @@ inline void CycGrpG_new(CycGrpG *g) { g->P=EC_POINT_new(ec_group); }
 inline void CycGrpZp_new(CycGrpZp *x) { x->B=BN_new(); }
 extern CycGrpG *CycGrpGenerator;
 #endif
-void CycGrpZp_copy(CycGrpZp *a,CycGrpZp *b);
-void CycGrpG_copy(CycGrpG *a,CycGrpG *b);
+void CycGrpZp_copy(CycGrpZp *a,const CycGrpZp *b);
+void CycGrpG_copy(CycGrpG *a,const CycGrpG *b);
+char* CycGrpZp_toHexString(const CycGrpZp *a); // convert point in Hex string. When CYC_GRP_BLS_G1=1 the representation is like the one described here:
+// https://github.com/herumi/mcl/blob/master/api.md for ioMode=16. Otherwise, it uses the serialization of openssl. The strings are always terminated by the null character '\0'.
+char* CycGrpG_toHexString(const CycGrpG *a);
+void CycGrpZp_fromHexString(CycGrpZp *x,const char *s);
+void CycGrpG_fromHexString(CycGrpG *a,const char *s);
 void generate_secret_key(CycGrpZp *sk);
 void generate_public_key(CycGrpG *PK,const CycGrpZp*sk);
 #endif 

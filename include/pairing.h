@@ -13,8 +13,16 @@ typedef mclBnFr Zp;
 extern G2 G2Generator;
 int pairing_init(void);
 void  GT_copy(GT *a,GT *b);
-#define Zp_serialize(buf,maxBufSize,x) (mclBnFr_serialize(buf,maxBufSize,x))
-#define G1_serialize(buf,maxBufSize,g) (mclBnG1_serialize(buf,maxBufSize,g))
+inline size_t Zp_serialize(unsigned char *buf,size_t maxBufSize, const Zp *x){  
+size_t length=mclBnFr_serialize(buf,maxBufSize,x);
+buf[length]='\0';
+return length;
+}
+inline size_t G1_serialize(unsigned char *buf,size_t maxBufSize,const G1 *g){
+size_t length=mclBnG1_serialize(buf,maxBufSize,g);
+buf[length]='\0';
+return length;
+}
 #define Zp_deserialize(x,buf,maxBufSize) (mclBnFr_deserialize(x,buf,maxBufSize))
 #define G1_deserialize(g,buf,maxBufSize) (mclBnG1_deserialize(g,buf,maxBufSize))
 #define G1_setStr(g1,g1Str,len_g1Str,base) (mclBnG1_setStr(g1,g1Str,len_g1Str,base))
@@ -34,6 +42,12 @@ void  GT_copy(GT *a,GT *b);
 #define pairing(e,g1,g2) (mclBn_pairing(e,g1,g2))
 #define GT_serialize(buf,len,e) (mclBnGT_serialize(buf,len,e))
 #define GT_deserialize(e,buf,len) (mclBnGT_deserialize(e,buf,len))
+#define G2_serialize(buf,len,g2) (mclBnG2_serialize(buf,len,g2))
+#define G2_deserialize(g2,buf,len) (mclBnG2_deserialize(g2,buf,len))
+char *G2_toHexString(const G2 *g);
+char *Zp_toHexString(const Zp *x);
+void G2_fromHexString(G2 *g,const char *s);
+void Zp_fromHexString(Zp *x,const char *s);
 extern unsigned char buf_for_serializing[1024];
 inline void Zp_copy(Zp *a,Zp *b){
 #if PARALLELISM == 1

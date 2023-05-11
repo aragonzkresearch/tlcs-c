@@ -44,19 +44,23 @@ int main()
 uint64_t round;
 int i,ret;
 TLCSParty P[NUM_PARTIES];
+TLCSParty P2[NUM_PARTIES];
 bool verified_proof[NUM_PARTIES];
 G1 Signature;
 CycGrpG GPK;
 CycGrpZp gsk;
 unsigned int time_offset;
 time_t current;
-
+char *serialized_proof;
 
 
 
 //time_t current=genesis+1955231*3;
  //   printf("%s", ctime(&current));
 //return 0;
+
+serialized_proof=(char *)malloc(5000000);
+
 
 
 #if _DEBUG_ == 1
@@ -77,6 +81,10 @@ ASSERT(!group_init(nid));
 #endif 
 generate_loe_publickey();
 
+
+
+
+
 //round=1954572;
 current=time(NULL);
 printf("Now it is %s",ctime(&current));
@@ -95,7 +103,6 @@ for (i=0;i<NUM_PARTIES;i++){
 #if _DEBUG_ == 1
 begin = clock();
 #endif
-/* here, do your time-consuming job */
 
 ASSERT(!Prover(&P[i],round));
 #if _DEBUG_ == 1
@@ -104,11 +111,13 @@ end = clock();
 printf("time spent by party %d in computing his public key and proof: %fs\n",i,time_spent);
 #endif
 
-
+serialized_proof=SerializePartyOutput(&P[i].PK,&P[i].pi,NULL);
+DeserializePartyOutput(&P2[i].PK,&P2[i].pi,serialized_proof,NULL);
+free(serialized_proof);
 #if _DEBUG_ == 1
 begin = clock();
 #endif
-ASSERT(!(ret=Verifier(&P[i].PK,&P[i].pi,round)));
+ASSERT(!(ret=Verifier(&P2[i].PK,&P2[i].pi,round)));
 #if _DEBUG_ == 1
 end = clock();
  time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
@@ -122,8 +131,13 @@ else verified_proof[i]=false;
 CycGrpG_new(&GPK);
 #endif
 
-AggregatePublicKeys(&GPK,P,NUM_PARTIES,verified_proof);
+
+
+
 }
+AggregatePublicKeys(&GPK,P,NUM_PARTIES,verified_proof);
+printf("\nAggregate public key: %s\n", CycGrpG_toHexString(&GPK));
+
 // uncomment as sanity check tp test a failed inversion (supposes inversion error for party i=3, so set NUM_PARTIES>=4)
 //CycGrpG_add(&P[3].pi.C[0][0].PK,&P[3].pi.C[0][0].PK,&P[3].pi.C[0][0].PK);
 #if PK_SIMULATED == 1 // in this case we are generating the signature by ourself because we simulated the public key and we know the corresponding secret key
@@ -154,11 +168,8 @@ end = clock();
  time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 printf("time spent in inversion for %d parties: %fs\n",NUM_PARTIES,time_spent);
 #endif
-printf("inversion1\n");
 generate_public_key(&Recovered_PK,&gsk);
-printf("inversion2\n");
 if (!CycGrpG_isEqual(&Recovered_PK,&GPK)) { // check that g^{gsk} =GPK 
-printf("inversion3\n");
 #if _DEBUG_ == 1
 printf("Error in inversion for party %d\n",i);
 #endif 
