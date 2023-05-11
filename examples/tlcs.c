@@ -25,11 +25,6 @@
 #include <openssl/obj_mac.h>
 #endif
 
-inline static void set_loe_signature(G1 *Signature, const char *sigStr,size_t len) {
-mclBn_setETHserialization(1);
-ASSERT(!(mclBnG1_setStr(Signature, sigStr, len, MCLBN_IO_SERIALIZE_HEX_STR)));
-mclBn_setETHserialization(0);
-}
 
 static inline uint64_t current_time_to_current_round(time_t current){
 return (current-loe_genesis_time)/loe_period;

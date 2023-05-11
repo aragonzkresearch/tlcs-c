@@ -4,6 +4,7 @@
 // Vincenzo Iovino, 2023, Aragon ZK Research
 #ifndef _TLCS_H_
 #define _TLCS_H_ 1
+#include <stdio.h>
 #include <stdint.h>
  #include <openssl/sha.h>
 #include <mcl/bn_c384_256.h>
@@ -63,4 +64,9 @@ void HashRoundToG1(G1 *g1,uint64_t *round);
 char *SerializePartyOutput(const CycGrpG *PK,const Proof *pi,size_t *size);
 void DeserializePartyOutput(CycGrpG *PK,Proof *pi,const char *s,size_t *);
 char *SerializePKandCommitment(const CycGrpG *PK,const CommitmentTuple C[][NUM_COLUMNS]);
+inline static void set_loe_signature(G1 *Signature, const char *sigStr,size_t len) {
+mclBn_setETHserialization(1);
+ASSERT(!(mclBnG1_setStr(Signature, sigStr, len, MCLBN_IO_SERIALIZE_HEX_STR)));
+mclBn_setETHserialization(0);
+}
 #endif 
