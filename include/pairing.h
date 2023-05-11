@@ -44,6 +44,7 @@ return length;
 #define GT_deserialize(e,buf,len) (mclBnGT_deserialize(e,buf,len))
 #define G2_serialize(buf,len,g2) (mclBnG2_serialize(buf,len,g2))
 #define G2_deserialize(g2,buf,len) (mclBnG2_deserialize(g2,buf,len))
+char *G1_toHexString(const G1 *g);
 char *G2_toHexString(const G2 *g);
 char *Zp_toHexString(const Zp *x);
 void G2_fromHexString(G2 *g,const char *s);

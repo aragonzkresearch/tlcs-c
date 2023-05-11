@@ -39,6 +39,17 @@ GT_serialize(buf_for_serializing,sizeof(buf_for_serializing),b);
 GT_deserialize(a, buf_for_serializing,sizeof(buf_for_serializing)); 
 #endif
 }
+char *G1_toHexString(const G1 *g){
+char buf[1024];
+char *s;
+//int len=G2_serialize(buf,1024,g);
+int len=mclBnG1_getStr(buf,1024,g,16);
+if (len==0) return NULL;
+s=(char *)malloc(len+1);
+strncpy(s,buf,len);
+s[len]='\0';
+return s;
+}
 
 char *G2_toHexString(const G2 *g){
 char buf[1024];

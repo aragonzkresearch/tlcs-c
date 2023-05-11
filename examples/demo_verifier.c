@@ -12,7 +12,6 @@
 #include "cyclic_group.h"
 #include "simulated_loe.h"
 #include "err.h"
-#define _DEBUG_ 0
 #if CYC_GRP_BLS_G1 == 1
 
 #else

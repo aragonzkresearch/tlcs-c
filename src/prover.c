@@ -14,11 +14,6 @@
 #endif
 
 #define get_bit(a,n) ( (a[n/8] & (((unsigned char)1U) << (n%8))) !=0  )
-unsigned char buf_for_serializing[1024]; 
-unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO]; 
-#if PARALLELISM == 1 
-unsigned char buf_for_hashing_parallel_safe[NUM_REPETITIONS][SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO]; 
-#endif 
 static SHA256_CTX ctx;
 inline  void ComputeChallenge(bool Challenge[],CycGrpG *PK,CommitmentTuple C[][NUM_COLUMNS],uint64_t *round){
 int i;
@@ -145,18 +140,18 @@ for (i=0;i<NUM_REPETITIONS;i++) CycGrpZp_copy(&sk_parallel_safe[i],&P->sk);
 for (i=0;i<NUM_REPETITIONS;i++){ 
 #if CYC_GRP_BLS_G1 == 1
 #else 
-CycGrpZp_new(&sk[i][0]); 
+CycGrpZp_new(&sk[i][0]);  
 CycGrpZp_new(&sk[i][1]); 
 #endif
-CycGrpZp_setRand(&sk[i][0]);
+CycGrpZp_setRand(&sk[i][0]); // choose sk[i][0] randomly from Zq
 
 
-Zp_setRand(&t[i][0]);
+Zp_setRand(&t[i][0]); // choose random t[i][0] from Zp
 Zp_setRand(&t[i][1]);
 #if PARALLELISM == 1
 CycGrpZp_sub(&sk[i][1],&sk_parallel_safe[i], &sk[i][0]);
 #else
-CycGrpZp_sub(&sk[i][1],&P->sk, &sk[i][0]);
+CycGrpZp_sub(&sk[i][1],&P->sk, &sk[i][0]); // sk[i][1]=sk-sk[i][0] so that sk=sk[i][0]+sk[i][1]
 #endif
 #if CYC_GRP_BLS_G1 == 1
 

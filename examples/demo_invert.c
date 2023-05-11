@@ -12,7 +12,6 @@
 #include "cyclic_group.h"
 #include "simulated_loe.h"
 #include "err.h"
-#define _DEBUG_ 0
 #if CYC_GRP_BLS_G1 == 1
 
 #else
@@ -20,7 +19,6 @@
 #include <openssl/ecdh.h>
 #include <openssl/obj_mac.h>
 #endif
-
 #define MAX_NUM_PARTIES 10
 int main(int argc, char**argv)
 {
@@ -89,7 +87,7 @@ fclose(fp2);
 CycGrpG_new(&GPK);
 #endif
 CycGrpG_fromHexString(&GPK,serialized_aggregated);
-printf("\nAggregate ublic key: %s %s\n", serialized_aggregated, CycGrpG_toHexString(&GPK));
+printf("\nAggregate public key: %s %s\n", serialized_aggregated, CycGrpG_toHexString(&GPK));
 
 // we set signature Signature to a real LOE's signature
 //const  char *sigStr="9544ddce2fdbe8688d6f5b4f98eed5d63eee3902e7e162050ac0f45905a55657714880adabe3c3096b92767d886567d0"; // this is the signature for round 1 of the unchained chain
