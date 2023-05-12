@@ -49,7 +49,7 @@ XOR (unsigned char y[], CycGrpZp * sk, unsigned char sha256_digest[])
 //int length=CycGrpZp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),sk); 
 //ASSERT(length);
   CycGrpZp_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), sk);
-  for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATION; i++)
+  for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
     y[i] = (unsigned char) (buf_parallel_safe[i] ^ sha256_digest[i]);
 #else
 //int length=CycGrpZp_serialize(buf_for_serializing,sizeof(buf_for_serializing),sk); 

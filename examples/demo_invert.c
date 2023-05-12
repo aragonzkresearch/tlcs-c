@@ -89,7 +89,7 @@ main (int argc, char **argv)
   rewind (fp2);
   fread (serialized_aggregated, 1, len_aggregated, fp2);
   fclose (fp2);
-#if _CYC_GRP_BLS_G1 == 1
+#if CYC_GRP_BLS_G1 == 1
 #else
   CycGrpG_new (&GPK);
 #endif
@@ -123,7 +123,7 @@ main (int argc, char **argv)
 
   {
     CycGrpG Recovered_PK;
-#if _CYC_GRP_BLS_G1 == 1
+#if CYC_GRP_BLS_G1 == 1
 #else
     CycGrpZp_new (&gsk);
     CycGrpG_new (&Recovered_PK);
