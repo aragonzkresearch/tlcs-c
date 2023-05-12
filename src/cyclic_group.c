@@ -105,8 +105,14 @@ void
 CycGrpG_copy (CycGrpG * a, const CycGrpG * b)
 {
 
+#if PARALLELISM == 1
+  unsigned char buf_parallel_safe[1024];
+  CycGrpG_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), b);
+  CycGrpG_deserialize (a, buf_parallel_safe, sizeof (buf_parallel_safe));
+#else
   CycGrpG_serialize (buf_for_serializing, sizeof (buf_for_serializing), b);
   CycGrpG_deserialize (a, buf_for_serializing, sizeof (buf_for_serializing));
+#endif
 }
 
 char *

@@ -122,7 +122,7 @@ main ()
 #if _DEBUG_ == 1
       begin = clock ();
 #endif
-      ASSERT (!(ret = Verifier (&P2[i].PK, &P2[i].pi, round)));
+      ASSERT (!(ret = Verifier (&P[i].PK, &P[i].pi, round)));
 #if _DEBUG_ == 1
       end = clock ();
       time_spent = (double) (end - begin) / CLOCKS_PER_SEC;

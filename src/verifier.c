@@ -62,7 +62,13 @@ Verifier (CycGrpG * PK, Proof * pi, uint64_t round)
   ComputeChallenge (Challenge, PK, pi->C, &round);
 #if PARALLELISM == 1
   for (i = 0; i < NUM_REPETITIONS; i++)
-    CycGrpG_copy (&PK_parallel_safe[i], PK);
+    {
+#if CYC_GRP_BLS_G1 ==1
+#else
+      CycGrpG_new (&PK_parallel_safe[i]);
+#endif
+      CycGrpG_copy (&PK_parallel_safe[i], PK);
+    }
 //#pragma omp parallel 
   {
 #pragma omp for
