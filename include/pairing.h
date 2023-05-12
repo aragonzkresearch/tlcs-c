@@ -11,18 +11,24 @@ typedef mclBnGT GT;
 typedef mclBnFr Zp;
 
 extern G2 G2Generator;
-int pairing_init(void);
-void  GT_copy(GT *a,GT *b);
-inline size_t Zp_serialize(unsigned char *buf,size_t maxBufSize, const Zp *x){  
-size_t length=mclBnFr_serialize(buf,maxBufSize,x);
-buf[length]='\0';
-return length;
+int pairing_init (void);
+void GT_copy (GT * a, GT * b);
+inline size_t
+Zp_serialize (unsigned char *buf, size_t maxBufSize, const Zp * x)
+{
+  size_t length = mclBnFr_serialize (buf, maxBufSize, x);
+  buf[length] = '\0';
+  return length;
 }
-inline size_t G1_serialize(unsigned char *buf,size_t maxBufSize,const G1 *g){
-size_t length=mclBnG1_serialize(buf,maxBufSize,g);
-buf[length]='\0';
-return length;
+
+inline size_t
+G1_serialize (unsigned char *buf, size_t maxBufSize, const G1 * g)
+{
+  size_t length = mclBnG1_serialize (buf, maxBufSize, g);
+  buf[length] = '\0';
+  return length;
 }
+
 #define Zp_deserialize(x,buf,maxBufSize) (mclBnFr_deserialize(x,buf,maxBufSize))
 #define G1_deserialize(g,buf,maxBufSize) (mclBnG1_deserialize(g,buf,maxBufSize))
 #define G1_setStr(g1,g1Str,len_g1Str,base) (mclBnG1_setStr(g1,g1Str,len_g1Str,base))
@@ -44,20 +50,22 @@ return length;
 #define GT_deserialize(e,buf,len) (mclBnGT_deserialize(e,buf,len))
 #define G2_serialize(buf,len,g2) (mclBnG2_serialize(buf,len,g2))
 #define G2_deserialize(g2,buf,len) (mclBnG2_deserialize(g2,buf,len))
-char *G1_toHexString(const G1 *g);
-char *G2_toHexString(const G2 *g);
-char *Zp_toHexString(const Zp *x);
-void G2_fromHexString(G2 *g,const char *s);
-void Zp_fromHexString(Zp *x,const char *s);
+char *G1_toHexString (const G1 * g);
+char *G2_toHexString (const G2 * g);
+char *Zp_toHexString (const Zp * x);
+void G2_fromHexString (G2 * g, const char *s);
+void Zp_fromHexString (Zp * x, const char *s);
 extern unsigned char buf_for_serializing[1024];
-inline void Zp_copy(Zp *a,Zp *b){
+inline void
+Zp_copy (Zp * a, Zp * b)
+{
 #if PARALLELISM == 1
-unsigned char buf_parallel_safe[1024];
-Zp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),b); 
-Zp_deserialize(a, buf_parallel_safe,sizeof(buf_parallel_safe)); 
+  unsigned char buf_parallel_safe[1024];
+  Zp_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), b);
+  Zp_deserialize (a, buf_parallel_safe, sizeof (buf_parallel_safe));
 #else
-Zp_serialize(buf_for_serializing,sizeof(buf_for_serializing),b); 
-Zp_deserialize(a, buf_for_serializing,sizeof(buf_for_serializing)); 
+  Zp_serialize (buf_for_serializing, sizeof (buf_for_serializing), b);
+  Zp_deserialize (a, buf_for_serializing, sizeof (buf_for_serializing));
 #endif
 }
 #endif
