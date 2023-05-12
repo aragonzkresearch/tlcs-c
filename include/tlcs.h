@@ -25,8 +25,7 @@ extern unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH *
 // We assume that the serialization of the secret keys in CycGrpZp have length <=SHA256_DIGEST_LENGTH*3. Note that for simplicity now the serialization is not in binary so it consumes 64 bytes for keys of 32 bytes.
 
 #if PARALLELISM ==1
-extern unsigned char
-  buf_for_hashing_parallel_safe[NUM_REPETITIONS][SHA256_DIGEST_LENGTH];
+extern unsigned char buf_for_hashing_parallel_safe[NUM_REPETITIONS][SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO];
 #endif
 
 
