@@ -13,6 +13,6 @@ echo "make all"
 echo "cd .."
 exit 1
 fi
-
+mkdir bin
 make all
 echo "Installation terminated."
