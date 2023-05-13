@@ -1,7 +1,7 @@
 CC=g++
 CCOPT=-Wall -fopenmp -lpthread -fPIC
 DFLAGS0=-DPARALLELISM=0 -D_DEBUG_=1 -DCYC_GRP_BLS_G1=0
-DFLAGS1=-DPARALLELISM=0 -D_DEBUG_=1 -DCYC_GRP_BLS_G1=1
+DFLAGS1=-DPARALLELISM=0 -D_DEBUG_=1 -DCYC_GRP_BLS_G1=1 
 DFLAGS2=-DPARALLELISM=0 -D_DEBUG_=0 -DCYC_GRP_BLS_G1=0
 DFLAGS3=-DPARALLELISM=0 -D_DEBUG_=0 -DCYC_GRP_BLS_G1=1
 MCL_INCLUDE_PATH=mcl/include
@@ -56,14 +56,14 @@ tlcs: libtlcs examples/tlcs.c
 	$(CC) -o  bin/tlcs examples/tlcs.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS0) $(CCOPT)
 tlcs_bls_g1: libtlcs_bls_g1 examples/tlcs.c 
 	$(CC) -o  bin/tlcs_bls_g1 examples/tlcs.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs_bls_g1.so $(DFLAGS1) $(CCOPT)
-demo_prover: cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o examples/demo_prover.c global_bufs.o
-	$(CC) -o  bin/demo_prover src/cyclic_group.o src/err.o src/pairing.o examples/demo_prover.c src/prover.o src/verifier.o src/aggregate.o src/invert.o src/serialize.o src/tests/simulated_loe.o src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS2) $(CCOPT)
-demo_aggregator: cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o examples/demo_aggregator.c global_bufs.o
-	$(CC) -o  bin/demo_aggregator src/cyclic_group.o src/err.o src/pairing.o src/prover.o src/verifier.o examples/demo_aggregator.c src/aggregate.o src/invert.o src/serialize.o src/tests/simulated_loe.o src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS2) $(CCOPT)
-demo_verifier: cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o examples/demo_verifier.c global_bufs.o
-	$(CC) -o  bin/demo_verifier src/cyclic_group.o src/err.o src/pairing.o src/prover.o src/verifier.o examples/demo_verifier.c src/aggregate.o src/invert.o src/serialize.o src/tests/simulated_loe.o src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS2) $(CCOPT)
-demo_invert: cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o examples/demo_invert.c global_bufs.o
-	$(CC) -o  bin/demo_invert src/cyclic_group.o src/err.o src/pairing.o src/aggregate.o src/prover.o src/verifier.o examples/demo_invert.c src/invert.o src/serialize.o src/tests/simulated_loe.o src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS2) $(CCOPT)
+demo_prover: examples/demo_prover.c libtlcs
+	$(CC) -o  bin/demo_prover examples/demo_prover.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+demo_verifier: examples/demo_verifier.c libtlcs
+	$(CC) -o  bin/demo_verifier examples/demo_verifier.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+demo_aggregator: examples/demo_aggregator.c libtlcs
+	$(CC) -o  bin/demo_aggregator examples/demo_aggregator.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+demo_invert: examples/demo_invert.c libtlcs
+	$(CC) -o  bin/demo_invert examples/demo_invert.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
 tests: examples/tests.c cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o global_bufs.o
 	$(CC) -o  bin/tests src/cyclic_group.o src/err.o src/pairing.o src/prover.o src/verifier.o src/aggregate.o src/invert.o src/serialize.o src/tests/simulated_loe.o examples/tests.c src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS0) $(CCOPT)
 clean:
