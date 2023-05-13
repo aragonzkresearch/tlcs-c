@@ -191,7 +191,10 @@ main ()
 	  }
 #if _DEBUG_ == 1
 	else
-	  Log6 (round);
+	 { 
+	   printf("general secret key for round %lu successfully inverted\n",round);
+Log6 (round);
+}
 #endif
       }
   }

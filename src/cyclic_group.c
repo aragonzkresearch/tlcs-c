@@ -75,7 +75,11 @@ group_init (int curve_type)
   if (!EC_GROUP_get_order (ec_group, Order.B, NULL))
     return 1;
   Order_bits = BN_num_bits (Order.B);
-//SERIALIZATION_CYCGRPZP_RATIO= (Order_bits-1)/256+1;
+if (SERIALIZATION_CYCGRPZP_RATIO< ((Order_bits-1)/256+1)*4) {
+printf("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile\n", ((Order_bits-1)/256+1)*4);
+Log2("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile", ((Order_bits-1)/256+1)*4);
+exit(1);
+}
 //MAX_LENGTH_SERIALIZATION=3200*SERIALIZATION_CYCGRPZP_RATIO*3; // *2 should be fine but let us be conservative
 
 //buf_for_hashing=(unsigned char *)malloc(16384); //(unsigned char *)malloc(SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO);
