@@ -36,7 +36,7 @@ extern unsigned char
 
 typedef struct
 {
-  G2 T; // serialized element of G2 in hexadecimal
+  G2 T;				// serialized element of G2 in hexadecimal
   CycGrpG PK;
   unsigned char y[SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO];
 
@@ -44,7 +44,7 @@ typedef struct
 typedef struct
 {
 //CycGrpZp sk;
-  Zp t; // serialized Zp in hexadecimal
+  Zp t;				// serialized Zp in hexadecimal
 } OpeningTuple;
 typedef struct
 {

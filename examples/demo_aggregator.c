@@ -102,6 +102,6 @@ main (int argc, char **argv)
   AggregatePublicKeys (&GPK, P, NUM_PARTIES, verified_proof);
   fprintf (fp2, "%s", CycGrpG_toHexString (&GPK));
   fclose (fp2);
- Err ();
+  Err ();
   return 0;
 }

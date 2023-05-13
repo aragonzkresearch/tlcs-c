@@ -11,23 +11,32 @@
 #include "tlcs.h"
 #include "pairing.h"
 #include "cyclic_group.h"
-time_t loe_genesis_time=1677685200;
-unsigned int loe_period=3;
+time_t loe_genesis_time = 1677685200;
+unsigned int loe_period = 3;
 G2 PK_LOE;
-static const char *PK_LOEStr="a0b862a7527fee3a731bcb59280ab6abd62d5c0b6ea03dc4ddf6612fdfc9d01f01c31542541771903475eb1ec6615f8d0df0b8b6dce385811d6dcf8cbefb8759e5e616a3dfd054c928940766d9a5b9db91e3b697e5d70a975181e007f87fca5e";
+static const char *PK_LOEStr =
+  "a0b862a7527fee3a731bcb59280ab6abd62d5c0b6ea03dc4ddf6612fdfc9d01f01c31542541771903475eb1ec6615f8d0df0b8b6dce385811d6dcf8cbefb8759e5e616a3dfd054c928940766d9a5b9db91e3b697e5d70a975181e007f87fca5e";
 static Zp sk;
-void generate_loe_publickey(void){
+void
+generate_loe_publickey (void)
+{
 #if PK_SIMULATED == 1
-ASSERT(!Zp_setRand(&sk));
-G2_mul(&PK_LOE, &G2Generator, &sk);
+  ASSERT (!Zp_setRand (&sk));
+  G2_mul (&PK_LOE, &G2Generator, &sk);
 #else
-mclBn_setETHserialization(1);
-ASSERT(!(mclBnG2_setStr(&PK_LOE, PK_LOEStr, strlen(PK_LOEStr), MCLBN_IO_SERIALIZE_HEX_STR)));
-mclBn_setETHserialization(0);
+  mclBn_setETHserialization (1);
+  ASSERT (!
+	  (mclBnG2_setStr
+	   (&PK_LOE, PK_LOEStr, strlen (PK_LOEStr),
+	    MCLBN_IO_SERIALIZE_HEX_STR)));
+  mclBn_setETHserialization (0);
 #endif
 }
-void generate_loe_signature(G1 *Signature, uint64_t round){
-G1 Hash;
-HashRoundToG1(&Hash,&round); // HashedRound=MAP_TO_POINT(SHA256(BIG_ENDIAN(round)))
-G1_mul(Signature,&Hash,&sk);
+
+void
+generate_loe_signature (G1 * Signature, uint64_t round)
+{
+  G1 Hash;
+  HashRoundToG1 (&Hash, &round);	// HashedRound=MAP_TO_POINT(SHA256(BIG_ENDIAN(round)))
+  G1_mul (Signature, &Hash, &sk);
 }
