@@ -130,19 +130,27 @@ main (int argc, char **argv)
 #endif
 
     i = InvertAggregate (&gsk, P, i, &Signature, verified_proof);
-
-    generate_public_key (&Recovered_PK, &gsk);
-    if (!CycGrpG_isEqual (&Recovered_PK, &GPK))
+    if (i != -1)
       {				// check that g^{gsk} =GPK 
 	printf ("Error in inversion for party %d\n", i);
 	return 1;
       }
     else
       {
-	printf ("Successfully inverted sk %s\n", CycGrpZp_toHexString (&gsk));
+	generate_public_key (&Recovered_PK, &gsk);
+	if (!CycGrpG_isEqual (&Recovered_PK, &GPK))
+	  {			// check that g^{gsk} =GPK 
+	    printf ("Error in inversion for party %d\n", i);
+	    return 1;
+	  }
+	else
+	  {
+	    printf ("Successfully inverted sk %s\n",
+		    CycGrpZp_toHexString (&gsk));
 
+	  }
       }
+    Err ();
   }
- Err ();
   return 0;
 }

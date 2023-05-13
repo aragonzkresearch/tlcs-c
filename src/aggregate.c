@@ -61,5 +61,5 @@ InvertAggregate (CycGrpZp * gsk, TLCSParty P[], size_t num_parties,
 
       }
 
-  return -1;
+  return -1;			// -1 == SUCCESS
 }

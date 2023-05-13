@@ -173,26 +173,33 @@ main ()
     begin = clock ();
 #endif
     i = InvertAggregate (&gsk, P, NUM_PARTIES, &Signature, verified_proof);
-#if _DEBUG_ == 1
-    end = clock ();
-    time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-    printf ("time spent in inversion for %d parties: %fs\n", NUM_PARTIES,
-	    time_spent);
-#endif
-    generate_public_key (&Recovered_PK, &gsk);
-    if (!CycGrpG_isEqual (&Recovered_PK, &GPK))
-      {				// check that g^{gsk} =GPK 
-#if _DEBUG_ == 1
+    if (i != -1)
+      {
 	printf ("Error in inversion for party %d\n", i);
-#endif
-	return 1;
       }
-#if _DEBUG_ == 1
     else
-      printf ("general secret key for round %lu successfully inverted\n",
-	      round);
+      {
+#if _DEBUG_ == 1
+	end = clock ();
+	time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
+	printf ("time spent in inversion for %d parties: %fs\n", NUM_PARTIES,
+		time_spent);
 #endif
+	generate_public_key (&Recovered_PK, &gsk);
+	if (!CycGrpG_isEqual (&Recovered_PK, &GPK))
+	  {			// check that g^{gsk} =GPK 
+#if _DEBUG_ == 1
+	    printf ("Error in inversion for party %d\n", i);
+#endif
+	    return 1;
+	  }
+#if _DEBUG_ == 1
+	else
+	  printf ("general secret key for round %lu successfully inverted\n",
+		  round);
+#endif
+      }
   }
- //err ();
+  Err ();
   return 0;
 }
