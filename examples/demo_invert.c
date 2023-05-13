@@ -143,6 +143,6 @@ main (int argc, char **argv)
 
       }
   }
-  err ();
+ Err ();
   return 0;
 }

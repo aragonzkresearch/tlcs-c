@@ -14,5 +14,10 @@ echo "cd .."
 exit 1
 fi
 mkdir bin
+mkdir lib
 make all
 echo "Installation terminated."
+echo "Now execute the following commands:"
+echo "cp ./lib/libtlcs.so /usr/lib"
+echo "cp ./lib/tlcs_bls_g1.so /usr/lib"
+echo "sudo ldconfig"

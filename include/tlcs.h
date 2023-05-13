@@ -11,6 +11,9 @@
 #include "cyclic_group.h"
 #define NUM_REPETITIONS 80
 #define NUM_COLUMNS 2
+#define bool int
+#define true 1
+#define false 0
 extern int g_err;
 #define ASSERT(x) { if (!(x)) { printf("err %s:%d\n", __FILE__, __LINE__); g_err++; } }
 extern unsigned char buf_for_serializing[1024];
@@ -33,7 +36,7 @@ extern unsigned char
 
 typedef struct
 {
-  G2 T;
+  G2 T; // serialized element of G2 in hexadecimal
   CycGrpG PK;
   unsigned char y[SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO];
 
@@ -41,7 +44,7 @@ typedef struct
 typedef struct
 {
 //CycGrpZp sk;
-  Zp t;
+  Zp t; // serialized Zp in hexadecimal
 } OpeningTuple;
 typedef struct
 {
@@ -57,14 +60,16 @@ typedef struct
 } TLCSParty;
 
 
-void err (void);
+void Err (void);
 int Prover (TLCSParty * P, uint64_t round);
 int Verifier (CycGrpG * PK, Proof * P, uint64_t round);
-int Invert (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi);
-int InvertAggregate (CycGrpZp * gsk, TLCSParty P[], size_t num_parties,
-		     G1 * Signature, bool verified_proof[]);
 void AggregatePublicKeys (CycGrpG * GPK, TLCSParty P[], size_t num_parties,
 			  bool verified_proof[]);
+int Invert (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi);
+
+
+int InvertAggregate (CycGrpZp * gsk, TLCSParty P[], size_t num_parties,
+		     G1 * Signature, bool verified_proof[]);
 void ComputeChallenge (bool Challenge[], CycGrpG * PK,
 		       CommitmentTuple C[][NUM_COLUMNS], uint64_t * round);
 void XOR (unsigned char y[], CycGrpZp * sk, unsigned char sha256_digest[]);

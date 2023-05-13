@@ -100,6 +100,6 @@ main (int argc, char **argv)
 
 
   fclose (fp);
-  err ();
+ Err ();
   return 0;
 }

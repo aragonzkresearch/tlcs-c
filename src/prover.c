@@ -15,7 +15,7 @@
 
 #define get_bit(a,n) ( (a[n/8] & (((unsigned char)1U) << (n%8))) !=0  )
 static SHA256_CTX ctx;
-inline void
+void
 ComputeChallenge (bool Challenge[], CycGrpG * PK,
 		  CommitmentTuple C[][NUM_COLUMNS], uint64_t * round)
 {

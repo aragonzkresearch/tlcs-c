@@ -7,7 +7,7 @@
 int g_err = 0;
 
 void
-err (void)
+Err (void)
 {
   if (g_err)
     {
