@@ -5,6 +5,7 @@
 #ifndef _PAIRING_H_
 #define _PAIRING_H_ 1
 //#include <mcl/bn_c384_256.h>
+#include "global_bufs.h"
 typedef mclBnG1 G1;
 typedef mclBnG2 G2;
 typedef mclBnGT GT;
@@ -55,7 +56,6 @@ char *G2_toHexString (const G2 * g);
 char *Zp_toHexString (const Zp * x);
 void G2_fromHexString (G2 * g, const char *s);
 void Zp_fromHexString (Zp * x, const char *s);
-extern unsigned char buf_for_serializing[1024];
 inline void
 Zp_copy (Zp * a, Zp * b)
 {

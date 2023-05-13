@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <openssl/sha.h>
 #include <mcl/bn_c384_256.h>
+#include "global_bufs.h"
 #include "cyclic_group.h"
 #define NUM_REPETITIONS 80
 #define NUM_COLUMNS 2
@@ -16,22 +17,14 @@
 #define false 0
 extern int g_err;
 #define ASSERT(x) { if (!(x)) { printf("err %s:%d\n", __FILE__, __LINE__); g_err++; } }
-extern unsigned char buf_for_serializing[1024];
+/*
 #if CYC_GRP_BLS_G1==1
 #define SERIALIZATION_CYCGRPZP_RATIO 1
 #else
 #define SERIALIZATION_CYCGRPZP_RATIO 8
 #endif
-extern unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH *
-				     SERIALIZATION_CYCGRPZP_RATIO];
-// The constant 3 above has the following meaning.
-// We assume that the serialization of the secret keys in CycGrpZp have length <=SHA256_DIGEST_LENGTH*3. Note that for simplicity now the serialization is not in binary so it consumes 64 bytes for keys of 32 bytes.
+*/
 
-#if PARALLELISM ==1
-extern unsigned char
-  buf_for_hashing_parallel_safe[NUM_REPETITIONS][SHA256_DIGEST_LENGTH *
-						 SERIALIZATION_CYCGRPZP_RATIO];
-#endif
 
 
 typedef struct
@@ -39,6 +32,7 @@ typedef struct
   G2 T;				// serialized element of G2 in hexadecimal
   CycGrpG PK;
   unsigned char y[SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO];
+  // unsigned char *y;
 
 } CommitmentTuple;
 typedef struct

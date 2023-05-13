@@ -8,7 +8,7 @@
 #include "tlcs.h"
 #include "pairing.h"
 #include "cyclic_group.h"
-
+#include "global_bufs.h"
 
 #if CYC_GRP_BLS_G1 == 1
 CycGrpG CycGrpGenerator;
@@ -67,7 +67,21 @@ group_init (int curve_type)
   if (!EC_GROUP_get_order (ec_group, Order.B, NULL))
     return 1;
   Order_bits = BN_num_bits (Order.B);
+//SERIALIZATION_CYCGRPZP_RATIO= (Order_bits-1)/256+1;
+//MAX_LENGTH_SERIALIZATION=3200*SERIALIZATION_CYCGRPZP_RATIO*3; // *2 should be fine but let us be conservative
 
+//buf_for_hashing=(unsigned char *)malloc(16384); //(unsigned char *)malloc(SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO);
+//buf_for_serializing=(unsigned char *)malloc(16384); //(unsigned char *)malloc(MAX_LENGTH_SERIALIZATION);
+//printf("ssss %d %d\n", SERIALIZATION_CYCGRPZP_RATIO,MAX_LENGTH_SERIALIZATION);
+#if PARALLELISM == 1
+  {
+    int i;
+    for (i = 0; i < NUM_REPETITIONS; i++)
+      buf_for_hashing_parallel_safe[i] =
+	(unsigned char *) malloc (SHA256_DIGEST_LENGTH *
+				  SERIALIZATION_CYCGRPZP_RATIO);
+  }
+#endif
   return 0;
 }
 
@@ -92,7 +106,7 @@ void
 CycGrpZp_copy (CycGrpZp * a, const CycGrpZp * b)
 {
 #if PARALLELISM == 1
-  unsigned char buf_parallel_safe[1024];
+  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
   CycGrpZp_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), b);
   CycGrpZp_deserialize (a, buf_parallel_safe, sizeof (buf_parallel_safe));
 #else
@@ -106,7 +120,7 @@ CycGrpG_copy (CycGrpG * a, const CycGrpG * b)
 {
 
 #if PARALLELISM == 1
-  unsigned char buf_parallel_safe[1024];
+  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
   CycGrpG_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), b);
   CycGrpG_deserialize (a, buf_parallel_safe, sizeof (buf_parallel_safe));
 #else
@@ -120,9 +134,9 @@ CycGrpZp_toHexString (const CycGrpZp * a)
 {
   char *s;
 #if CYC_GRP_BLS_G1 == 1
-  char buf[1024];
+  char buf[MAX_LENGTH_SERIALIZATION];
   size_t len;
-  len = mclBnFr_getStr (buf, 1024, a, 16);
+  len = mclBnFr_getStr (buf, MAX_LENGTH_SERIALIZATION, a, 16);
   s = (char *) malloc (len + 1);
   strncpy (s, buf, len);
   s[len] = '\0';
@@ -148,9 +162,9 @@ CycGrpG_toHexString (const CycGrpG * a)
 {
   char *s;
 #if CYC_GRP_BLS_G1 == 1
-  char buf[1024];
+  char buf[MAX_LENGTH_SERIALIZATION];
   size_t len;
-  len = mclBnG1_getStr (buf, 1024, a, 16);
+  len = mclBnG1_getStr (buf, MAX_LENGTH_SERIALIZATION, a, 16);
   s = (char *) malloc (len + 1);
   strncpy (s, buf, len);
   s[len] = '\0';

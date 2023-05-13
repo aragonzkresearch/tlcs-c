@@ -38,23 +38,23 @@ void
 GT_copy (GT * a, GT * b)
 {
 #if PARALLELISM == 1
-  unsigned char buf_parallel_safe[1024];
-  GT_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), b);
-  GT_deserialize (a, buf_parallel_safe, sizeof (buf_parallel_safe));
+  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
+  GT_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, b);
+  GT_deserialize (a, buf_parallel_safe, MAX_LENGTH_SERIALIZATION);
 #else
-  GT_serialize (buf_for_serializing, sizeof (buf_for_serializing), b);
-  GT_deserialize (a, buf_for_serializing, sizeof (buf_for_serializing));
+  GT_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, b);
+  GT_deserialize (a, buf_for_serializing, MAX_LENGTH_SERIALIZATION);
 #endif
 }
 
 char *
 G1_toHexString (const G1 * g)
 {
-  char buf[1024];
+  char buf[MAX_LENGTH_SERIALIZATION];
   char *s;
-//int len=G2_serialize(buf,1024,g);
+//int len=G2_serialize(buf,MAX_LENGTH_SERIALIZATION,g);
   mclBn_setETHserialization (1);
-  int len = mclBnG1_getStr (buf, 1024, g, 16);
+  int len = mclBnG1_getStr (buf, MAX_LENGTH_SERIALIZATION, g, 16);
   if (len == 0)
     {
       mclBn_setETHserialization (0);
@@ -70,11 +70,13 @@ G1_toHexString (const G1 * g)
 char *
 G2_toHexString (const G2 * g)
 {
-  char buf[1024];
+  char buf[MAX_LENGTH_SERIALIZATION];
   char *s;
-//int len=G2_serialize(buf,1024,g);
+//int len=G2_serialize(buf,MAX_LENGTH_SERIALIZATION,g);
   mclBn_setETHserialization (1);
-  int len = mclBnG2_getStr (buf, 1024, g, MCLBN_IO_SERIALIZE_HEX_STR);
+  int len =
+    mclBnG2_getStr (buf, MAX_LENGTH_SERIALIZATION, g,
+		    MCLBN_IO_SERIALIZE_HEX_STR);
   if (len == 0)
     {
       mclBn_setETHserialization (0);
@@ -94,17 +96,17 @@ G2_fromHexString (G2 * g, const char *s)
 //G2_deserialize(g,s,strlen(s));
   mclBn_setETHserialization (1);
   mclBnG2_setStr (g, s, strlen (s), MCLBN_IO_SERIALIZE_HEX_STR);
-  //mclBnG2_deserialize (g, s,1024);
+  //mclBnG2_deserialize (g, s,MAX_LENGTH_SERIALIZATION);
   mclBn_setETHserialization (0);
 }
 
 char *
 Zp_toHexString (const Zp * x)
 {
-  char buf[1024];
+  char buf[MAX_LENGTH_SERIALIZATION];
   char *s;
-//int len=Zp_serialize((unsigned char *)buf,1024,x);
-  int len = mclBnFr_getStr (buf, 1024, x, 16);
+//int len=Zp_serialize((unsigned char *)buf,MAX_LENGTH_SERIALIZATION,x);
+  int len = mclBnFr_getStr (buf, MAX_LENGTH_SERIALIZATION, x, 16);
   if (len == 0)
     return NULL;
   s = (char *) malloc (len + 1);

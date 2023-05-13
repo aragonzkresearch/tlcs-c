@@ -112,6 +112,7 @@ DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf,
 //printf("deserialized PK[%d]: %s\n",j,CycGrpG_toHexString(&pi->C[i][j].PK));
 	s += strlen (s) + 1;
 
+//pi->C[i][j].y=(unsigned char *)malloc(SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO);
 	memcpy ((char *) pi->C[i][j].y, s, SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO);	// deserialize C[i][j].y
 //printf("y[%d]:",j);
 /*{

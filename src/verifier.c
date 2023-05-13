@@ -18,19 +18,18 @@ XOR_Verifier (CycGrpZp * sk, unsigned char HashZ[], unsigned char y[])
   int i;
 //int length;
 #if PARALLELISM == 1
-  unsigned char buf_parallel_safe[1024];
+  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
 #endif
   for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
 #if PARALLELISM == 1
 
     buf_parallel_safe[i] = (unsigned char) (HashZ[i] ^ y[i]);
 // length=CycGrpZp_deserialize(sk, buf_parallel_safe,sizeof(buf_parallel_safe)); 
-  CycGrpZp_deserialize (sk, buf_parallel_safe, sizeof (buf_parallel_safe));
+  CycGrpZp_deserialize (sk, buf_parallel_safe, MAX_LENGTH_SERIALIZATION);
 #else
     buf_for_serializing[i] = (unsigned char) (HashZ[i] ^ y[i]);
 // length=CycGrpZp_deserialize(sk, buf_for_serializing,sizeof(buf_for_serializing)); 
-  CycGrpZp_deserialize (sk, buf_for_serializing,
-			sizeof (buf_for_serializing));
+  CycGrpZp_deserialize (sk, buf_for_serializing, MAX_LENGTH_SERIALIZATION);
 #endif
 //ASSERT(length);
 }

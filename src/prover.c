@@ -4,6 +4,7 @@
 // Vincenzo Iovino, 2023, Aragon ZK Research
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <openssl/sha.h>
 #include "tlcs.h"
@@ -45,16 +46,16 @@ XOR (unsigned char y[], CycGrpZp * sk, unsigned char sha256_digest[])
 {
   int i;
 #if PARALLELISM == 1
-  unsigned char buf_parallel_safe[1024];
+  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
 //int length=CycGrpZp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),sk); 
 //ASSERT(length);
-  CycGrpZp_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), sk);
+  CycGrpZp_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, sk);
   for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
     y[i] = (unsigned char) (buf_parallel_safe[i] ^ sha256_digest[i]);
 #else
 //int length=CycGrpZp_serialize(buf_for_serializing,sizeof(buf_for_serializing),sk); 
 //ASSERT(length);
-  CycGrpZp_serialize (buf_for_serializing, sizeof (buf_for_serializing), sk);
+  CycGrpZp_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, sk);
   for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
     y[i] = (unsigned char) (buf_for_serializing[i] ^ sha256_digest[i]);
 #endif
@@ -65,8 +66,8 @@ HashGTToBytes (unsigned char *buf, GT * e)
 {
 
 #if PARALLELISM == 1
-  unsigned char buf_parallel_safe[1024];
-  int length = GT_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), e);	// with BLS12-381 pairing length should 576 bytes
+  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
+  int length = GT_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, e);	// with BLS12-381 pairing length should 576 bytes
   ASSERT (length);
   if (!length)
     return 1;
@@ -84,7 +85,7 @@ HashGTToBytes (unsigned char *buf, GT * e)
 #endif
 
 #else
-  int length = GT_serialize (buf_for_serializing, sizeof (buf_for_serializing), e);	// with BLS12-381 pairing length should 576 bytes
+  int length = GT_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, e);	// with BLS12-381 pairing length should 576 bytes
   ASSERT (length);
   if (!length)
     return 1;
@@ -223,6 +224,8 @@ Prover (TLCSParty * P, uint64_t round)
 	XOR (P->pi.C[i][1].y, &sk[i][1], buf_for_hashing_parallel_safe[i]);
 #else
 	HashGTToBytes (buf_for_hashing, &Z[i][0]);	// buf_for_hashing holds SHA256(Z[i][0])
+//P->pi.C[i][0].y=(unsigned char *)malloc(SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO);
+//P->pi.C[i][1].y=(unsigned char *)malloc(SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO);
 	XOR (P->pi.C[i][0].y, &sk[i][0], buf_for_hashing);	// y[i]= sk[i][0] XOR SHA256(Z[i][0])
 	HashGTToBytes (buf_for_hashing, &Z[i][1]);
 	XOR (P->pi.C[i][1].y, &sk[i][1], buf_for_hashing);
