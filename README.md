@@ -59,4 +59,4 @@ Vincenzo Iovino (vincenzo@aragon.org)
 Aragon ZK Research Team: https://research.aragon.org/
 
 ## References
-[Vincenzo Iovino. How to Build a Time Lock Crypto Service based on League of Entropy. May 2023](https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ).
+Vincenzo Iovino. [How to Build a Time Lock Crypto Service based on League of Entropy](https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ), May 2023.
