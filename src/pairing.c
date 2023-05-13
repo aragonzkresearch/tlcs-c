@@ -74,9 +74,8 @@ G2_toHexString (const G2 * g)
   char *s;
 //int len=G2_serialize(buf,MAX_LENGTH_SERIALIZATION,g);
   mclBn_setETHserialization (1);
-  int len =
-    mclBnG2_getStr (buf, MAX_LENGTH_SERIALIZATION, g,
-		    MCLBN_IO_SERIALIZE_HEX_STR);
+  int len = mclBnG2_getStr (buf, MAX_LENGTH_SERIALIZATION, g,
+			    MCLBN_IO_SERIALIZE_HEX_STR);
   if (len == 0)
     {
       mclBn_setETHserialization (0);

@@ -132,7 +132,7 @@ main (int argc, char **argv)
     i = InvertAggregate (&gsk, P, i, &Signature, verified_proof);
     if (i != -1)
       {				// check that g^{gsk} =GPK 
-	printf ("Error in inversion for party %d\n", i);
+	Log2 ("Error in inversion for party", i);
 	return 1;
       }
     else
@@ -140,7 +140,7 @@ main (int argc, char **argv)
 	generate_public_key (&Recovered_PK, &gsk);
 	if (!CycGrpG_isEqual (&Recovered_PK, &GPK))
 	  {			// check that g^{gsk} =GPK 
-	    printf ("Error in inversion for party %d\n", i);
+	    Log2 ("Error in inversion for party", i);
 	    return 1;
 	  }
 	else

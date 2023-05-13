@@ -89,9 +89,7 @@ main (int argc, char **argv)
 #if _DEBUG_ == 1
   end = clock ();
   time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-  printf
-    ("time spent by the party in computing his public key and proof: %fs\n",
-     time_spent);
+Log3b(t);  
 #endif
 
   serialized_proof = SerializePartyOutput (&P.PK, &P.pi, &len);

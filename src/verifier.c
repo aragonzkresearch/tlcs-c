@@ -8,6 +8,7 @@
 #include <openssl/sha.h>
 #include "tlcs.h"
 #include "pairing.h"
+#include "err.h"
 #include "simulated_loe.h"
 #if PARALLELISM == 1
 #include <omp.h>
@@ -100,7 +101,7 @@ Verifier (CycGrpG * PK, Proof * pi, uint64_t round)
 	if (!CycGrpG_isEqual (&GTmp, PK))
 	  {
 #endif
-	    printf ("Verifier: error1 in repetition %d\n", i);
+	    Log2 ("Verifier: error1 in repetition", i);
 	    ret = 1;
 	    continue;
 	  }
@@ -154,14 +155,14 @@ Verifier (CycGrpG * PK, Proof * pi, uint64_t round)
 	    (&GTmp, &pi->C[i][(unsigned int) Challenge[i]].PK))
 	  {			// check that g^s =PK[i][Challenge_i] 
 #endif
-	    printf ("Verifier: error2 in repetition %d\n", i);
+	    Log2 ("Verifier: error2 in repetition\n", i);
 	    ret = 1;
 	    continue;
 	  }
 	G2_mul (&T[i], &G2Generator, &pi->O[i].t);	// T[i]=g2^{t[i}]
 	if (!G2_isEqual (&T[i], &pi->C[i][(unsigned int) Challenge[i]].T))
 	  {			// check that T[i] equals the value T[i][Challenge[i]] from the proof
-	    printf ("Verifier: error3 in repetition %d\n", i);
+	    Log2 ("Verifier: error3 in repetition", i);
 	    ret = 1;
 	    continue;
 	  }

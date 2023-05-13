@@ -7,6 +7,7 @@
 #include <string.h>
 #include <openssl/sha.h>
 #include "tlcs.h"
+#include "err.h"
 #include "pairing.h"
 #include "simulated_loe.h"
 int
@@ -32,7 +33,7 @@ Invert (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
       if (!CycGrpG_isEqual (&GTmp, PK))
 	{
 #if _DEBUG_ == 1
-	  printf ("Invert: error1 in repetition %d\n", i);
+	  Log2 ("Invert: error1 in repetition", i);
 #endif
 	  return 1;
 	}
@@ -54,7 +55,7 @@ Invert (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
       if (!CycGrpG_isEqual (&GTmp, PK))
 	{			// check that g^s =PK[i]
 #if _DEBUG_ == 1
-	  printf ("Invert: error2 in repetition %d\n", i);
+	  Log2 ("Invert: error2 in repetition", i);
 #endif
 	  return 1;
 	}
@@ -63,7 +64,7 @@ Invert (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
 	  CycGrpZp_copy (sk, &sktmp);
 #if _DEBUG_ == 1
 #if _DEBUG_VERBOSE_ == 1
-	  printf ("party' sk found out in repetition %d\n", i);
+	  Log2 ("party' sk found out in repetition", i);
 #endif
 #endif
 	  return 0;

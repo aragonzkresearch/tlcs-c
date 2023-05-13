@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "tlcs.h"
+#include "err.h"
 #include "pairing.h"
 #include "cyclic_group.h"
 #include "global_bufs.h"
@@ -18,12 +19,17 @@ static const char *g1Str =
 int
 group_init (void)
 {
-  int ret = CycGrpG_setStr (&CycGrpGenerator, g1Str, strlen (g1Str), 16);
+  int ret;
+  Log_init ();
+  ret = CycGrpG_setStr (&CycGrpGenerator, g1Str, strlen (g1Str), 16);
   if (ret != 0)
     {
       printf ("err ret=%d\n", ret);
+      Log2 ("err in CycGrp_setStr:", ret);
+
       return 1;
     }
+
   return 0;
 }
 
@@ -51,10 +57,12 @@ int Order_bits;
 int
 group_init (int curve_type)
 {
+  Log_init ();
   ec_group = EC_GROUP_new_by_curve_name (curve_type);
   if (ec_group == NULL)
     {
-      printf ("err in initialiting the group\n");
+      printf ("err in initializing the group\n");
+      Log ("err in initializing the group");
       return 1;
     }
   CycGrpGenerator = (CycGrpG *) malloc (sizeof (CycGrpG));

@@ -111,11 +111,8 @@ main ()
 #if _DEBUG_ == 1
       end = clock ();
       time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-      printf
-	("time spent by party %d in computing his public key and proof: %fs\n",
-	 i, time_spent);
+      Log3(i,time_spent);
 #endif
-
       serialized_proof = SerializePartyOutput (&P[i].PK, &P[i].pi, NULL);
       DeserializePartyOutput (&P2[i].PK, &P2[i].pi, serialized_proof, NULL);
       free (serialized_proof);
@@ -126,8 +123,7 @@ main ()
 #if _DEBUG_ == 1
       end = clock ();
       time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-      printf ("time spent by verifier on verifying proof of party %d: %fs\n",
-	      i, time_spent);
+	      Log4(i, time_spent);
 #endif
       if (ret == 0)
 	verified_proof[i] = true;
@@ -175,28 +171,27 @@ main ()
     i = InvertAggregate (&gsk, P, NUM_PARTIES, &Signature, verified_proof);
     if (i != -1)
       {
-	printf ("Error in inversion for party %d\n", i);
+	Log2 ("Error in inversion for party", i);
       }
     else
       {
 #if _DEBUG_ == 1
 	end = clock ();
 	time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-	printf ("time spent in inversion for %d parties: %fs\n", NUM_PARTIES,
+	Log5 (NUM_PARTIES,
 		time_spent);
 #endif
 	generate_public_key (&Recovered_PK, &gsk);
 	if (!CycGrpG_isEqual (&Recovered_PK, &GPK))
 	  {			// check that g^{gsk} =GPK 
 #if _DEBUG_ == 1
-	    printf ("Error in inversion for party %d\n", i);
+	    Log2 ("Error in inversion for party", i);
 #endif
 	    return 1;
 	  }
 #if _DEBUG_ == 1
 	else
-	  printf ("general secret key for round %lu successfully inverted\n",
-		  round);
+	  Log6 (round);
 #endif
       }
   }
