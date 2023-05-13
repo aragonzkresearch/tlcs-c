@@ -53,12 +53,16 @@ G1_toHexString (const G1 * g)
   char buf[1024];
   char *s;
 //int len=G2_serialize(buf,1024,g);
+  mclBn_setETHserialization (1);
   int len = mclBnG1_getStr (buf, 1024, g, 16);
-  if (len == 0)
+  if (len == 0){
+  mclBn_setETHserialization (0);
     return NULL;
+}
   s = (char *) malloc (len + 1);
   strncpy (s, buf, len);
   s[len] = '\0';
+  mclBn_setETHserialization (0);
   return s;
 }
 
@@ -68,12 +72,18 @@ G2_toHexString (const G2 * g)
   char buf[1024];
   char *s;
 //int len=G2_serialize(buf,1024,g);
-  int len = mclBnG2_getStr (buf, 1024, g, 16);
+  mclBn_setETHserialization (1);
+ int len = mclBnG2_getStr (buf, 1024, g, MCLBN_IO_SERIALIZE_HEX_STR);
   if (len == 0)
-    return NULL;
+   { 
+  mclBn_setETHserialization (0);
+return NULL;
+}
   s = (char *) malloc (len + 1);
-  strncpy (s, buf, len);
+  //strncpy (s, buf, len);
+  memcpy (s, buf, len);
   s[len] = '\0';
+  mclBn_setETHserialization (0);
   return s;
 }
 
@@ -81,7 +91,10 @@ void
 G2_fromHexString (G2 * g, const char *s)
 {
 //G2_deserialize(g,s,strlen(s));
-  mclBnG2_setStr (g, s, strlen (s), 16);
+  mclBn_setETHserialization (1);
+  mclBnG2_setStr (g, s, strlen (s), MCLBN_IO_SERIALIZE_HEX_STR);
+  //mclBnG2_deserialize (g, s,1024);
+  mclBn_setETHserialization (0);
 }
 
 char *
