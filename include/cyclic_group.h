@@ -32,37 +32,62 @@ extern CycGrpG CycGrpGenerator;
 #include <string.h>
 #include <openssl/ec.h>
 extern BN_CTX *bn_ctx;
+#if CYC_GRP_RSA == 1
+int group_init (const char *RSA_modulus, const char *RSA_pk);
+#else
 int group_init (int type);
+#endif
 extern EC_GROUP *ec_group;
 
 typedef struct
 {
+#if CYC_GRP_RSA == 1
+  BIGNUM *P;
+#else
   EC_POINT *P;
+#endif
 } CycGrpG;
 typedef struct
 {
   BIGNUM *B;
 } CycGrpZp;
+#if CYC_GRP_RSA == 1
+extern BIGNUM *RSA_modulus;
+extern BIGNUM *RSA_pk;
+#else
 extern CycGrpZp Order;
+#endif
 extern int Order_bits;
 // NOTE: deserialize and serialize bot for CycGrpG and CycGrpZp may behave differently accordingly on whether CYC_GRG_BLS_G1= 1 or 0. 
 // Currently _serialize functions work exactly as _toHexStr functions but we keep it separate in view of future changes (e.g., serialize to binary to improve efficiency).
-inline void
-CycGrpG_deserialize (CycGrpG * g, const unsigned char *buf, size_t maxBufSize)
+inline int
+CycGrpG_deserialize (CycGrpG * g, const unsigned char *buf, size_t maxBufSize)	// hex2point return 0 on error and 1 on success but we return 0 on success and -1 on error
 {
-  EC_POINT_hex2point (ec_group, (const char *) buf, g->P, NULL);
+#if CYC_GRP_RSA == 1
+  if (!BN_hex2bn (&g->P, (const char *) buf))
+    return -1;
+  return 0;
+#else
+  if (!EC_POINT_hex2point (ec_group, (const char *) buf, g->P, NULL))
+    return -1;
+  return 0;
+#endif
 }
 
 inline void
 CycGrpG_serialize (unsigned char *buf, size_t maxBufSize, const CycGrpG * g)
 {
+#if CYC_GRP_RSA == 1
+  strcpy ((char *) buf, (char *) BN_bn2hex (g->P));
+#else
   strcpy ((char *) buf,
 	  (char *) EC_POINT_point2hex (ec_group, g->P,
 				       POINT_CONVERSION_COMPRESSED, NULL));
+#endif
 }
 
 inline int
-CycGrpZp_isEqual (const CycGrpZp * x, const CycGrpZp * y)
+CycGrpZp_isEqual (const CycGrpZp * x, const CycGrpZp * y)	// same for EC and RSA
 {
   return !BN_cmp (x->B, y->B);
 }
@@ -71,31 +96,56 @@ CycGrpZp_isEqual (const CycGrpZp * x, const CycGrpZp * y)
 inline void
 CycGrpZp_add (CycGrpZp * z, const CycGrpZp * x, const CycGrpZp * y)
 {
+#if CYC_GRP_RSA == 1
+  BN_mod_mul (z->B, x->B, y->B, RSA_modulus, bn_ctx);
+#else
   BN_mod_add (z->B, x->B, y->B, Order.B, bn_ctx);
+#endif
 }
 
 inline int
 CycGrpG_isEqual (const CycGrpG * h, const CycGrpG * g)
 {
-  return !EC_POINT_cmp (ec_group, (h)->P, (g)->P, NULL);
+#if CYC_GRP_RSA == 1
+  return !BN_cmp (h->P, g->P);
+#else
+  return !EC_POINT_cmp (ec_group, h->P, g->P, NULL);
+#endif
 }				// we return 1 on success if both points are equal for compatibility with mcl isEqual and similar functions
 
 inline void
 CycGrpG_add (CycGrpG * h, const CycGrpG * u, const CycGrpG * v)
 {
+#if CYC_GRP_RSA == 1
+  BN_mod_mul (h->P, u->P, v->P, RSA_modulus, bn_ctx);
+#else
   EC_POINT_add (ec_group, h->P, u->P, v->P, NULL);
+#endif
 }
 
 inline void
 CycGrpZp_sub (CycGrpZp * z, const CycGrpZp * x, const CycGrpZp * y)
 {
+#if CYC_GRP_RSA == 1
+  BIGNUM *tmp;
+  tmp = BN_new ();
+  BN_copy (tmp, y->B);
+  BN_mod_inverse (tmp, tmp, RSA_modulus, bn_ctx);
+  BN_mod_mul (z->B, x->B, tmp, RSA_modulus, bn_ctx);
+  BN_free (tmp);
+#else
   BN_mod_sub (z->B, x->B, y->B, Order.B, bn_ctx);
+#endif
 }
 
 inline void
-CycGrpG_mul (CycGrpG * h, const CycGrpG * g, const CycGrpZp * x)
+CycGrpG_mul (CycGrpG * h, const CycGrpG * g, const CycGrpZp * x)	// in case of RSA g is ignored. In the EC case g is always the generator of the group
 {
+#if CYC_GRP_RSA == 1
+  BN_mod_exp (h->P, x->B, RSA_pk, RSA_modulus, bn_ctx);
+#else
   EC_POINT_mul (ec_group, h->P, NULL, g->P, x->B, NULL);
+#endif
 }
 
 inline void
@@ -111,16 +161,22 @@ CycGrpZp_setRand (CycGrpZp * x)
   return 0;
 }
 
-inline void
-CycGrpZp_deserialize (CycGrpZp * x, unsigned const char *buf, size_t len)
+inline int
+CycGrpZp_deserialize (CycGrpZp * x, unsigned const char *buf, size_t len)	// hex2bin return 0 on error and 1 on success but we return 0 on success and -1 otherwise
 {
-  BN_hex2bn (&(x->B), (const char *) buf);
+  if (!BN_hex2bn (&(x->B), (const char *) buf))
+    return -1;
+  return 0;
 }
 
 inline void
 CycGrpG_new (CycGrpG * g)
 {
+#if CYC_GRP_RSA == 1
+  g->P = BN_new ();
+#else
   g->P = EC_POINT_new (ec_group);
+#endif
 }
 
 inline void
@@ -136,8 +192,8 @@ void CycGrpG_copy (CycGrpG * a, const CycGrpG * b);
 char *CycGrpZp_toHexString (const CycGrpZp * a);	// convert point in Hex string. When CYC_GRP_BLS_G1=1 the representation is like the one described here:
 // https://github.com/herumi/mcl/blob/master/api.md for ioMode=16. Otherwise, it uses the serialization of openssl. The strings are always terminated by the null character '\0'.
 char *CycGrpG_toHexString (const CycGrpG * a);
-void CycGrpZp_fromHexString (CycGrpZp * x, const char *s);
-void CycGrpG_fromHexString (CycGrpG * a, const char *s);
+int CycGrpZp_fromHexString (CycGrpZp * x, const char *s);
+int CycGrpG_fromHexString (CycGrpG * a, const char *s);
 void generate_secret_key (CycGrpZp * sk);
 void generate_public_key (CycGrpG * PK, const CycGrpZp * sk);
 #endif

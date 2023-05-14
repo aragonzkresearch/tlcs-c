@@ -89,14 +89,16 @@ G2_toHexString (const G2 * g)
   return s;
 }
 
-void
+int
 G2_fromHexString (G2 * g, const char *s)
 {
+  int ret;
 //G2_deserialize(g,s,strlen(s));
   mclBn_setETHserialization (1);
-  mclBnG2_setStr (g, s, strlen (s), MCLBN_IO_SERIALIZE_HEX_STR);
+  ret = mclBnG2_setStr (g, s, strlen (s), MCLBN_IO_SERIALIZE_HEX_STR);
   //mclBnG2_deserialize (g, s,MAX_LENGTH_SERIALIZATION);
   mclBn_setETHserialization (0);
+  return ret;
 }
 
 char *
@@ -114,9 +116,10 @@ Zp_toHexString (const Zp * x)
   return s;
 }
 
-void
+int
 Zp_fromHexString (Zp * x, const char *s)
 {
+
 //Zp_deserialize(x,s,strlen(s));
-  mclBnFr_setStr (x, s, strlen (s), 16);
+  return mclBnFr_setStr (x, s, strlen (s), 16);
 }

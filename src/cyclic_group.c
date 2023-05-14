@@ -45,15 +45,55 @@ generate_secret_key (CycGrpZp * sk)
 {
   ASSERT (!CycGrpZp_setRand (sk));
 }
-#else // if undefined or set to any other string then we use openssl EC
+#else // else we use either openssl EC or RSA
 CycGrpG *CycGrpGenerator;
 #include <openssl/ec.h>
 #include <openssl/ecdh.h>
 #include <openssl/obj_mac.h>
 BN_CTX *bn_ctx;
 EC_GROUP *ec_group = NULL;
-CycGrpZp Order;
 int Order_bits;
+#if CYC_GRP_RSA ==1
+BIGNUM *RSA_modulus;
+BIGNUM *RSA_pk;
+int
+group_init (const char *modulus, const char *pk)
+{
+  Log_init ();
+  bn_ctx = BN_CTX_new ();
+  RSA_modulus = BN_new ();
+  RSA_pk = BN_new ();
+  if (BN_hex2bn (&RSA_modulus, modulus) == 0 || BN_hex2bn (&RSA_pk, pk) == 0)
+    {
+      printf ("err in initializing the RSA modulus and public key\n");
+      Log ("err in initializing the RSA modulus and public key");
+      return 1;
+    }
+
+  Order_bits = BN_num_bits (RSA_pk);
+  if (SERIALIZATION_CYCGRPZP_RATIO < ((Order_bits - 1) / 256 + 1) * 3)
+    {
+      printf
+	("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile\n",
+	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
+      Log2
+	("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile",
+	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
+      exit (1);
+    }
+#if PARALLELISM == 1
+  {
+    int i;
+    for (i = 0; i < NUM_REPETITIONS; i++)
+      buf_for_hashing_parallel_safe[i] =
+	(unsigned char *) malloc (SHA256_DIGEST_LENGTH *
+				  SERIALIZATION_CYCGRPZP_RATIO);
+  }
+#endif
+  return 0;
+}
+#else
+CycGrpZp Order;
 int
 group_init (int curve_type)
 {
@@ -75,16 +115,16 @@ group_init (int curve_type)
   if (!EC_GROUP_get_order (ec_group, Order.B, NULL))
     return 1;
   Order_bits = BN_num_bits (Order.B);
-if (SERIALIZATION_CYCGRPZP_RATIO< ((Order_bits-1)/256+1)*4) {
-printf("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile\n", ((Order_bits-1)/256+1)*4);
-Log2("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile", ((Order_bits-1)/256+1)*4);
-exit(1);
-}
-//MAX_LENGTH_SERIALIZATION=3200*SERIALIZATION_CYCGRPZP_RATIO*3; // *2 should be fine but let us be conservative
-
-//buf_for_hashing=(unsigned char *)malloc(16384); //(unsigned char *)malloc(SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO);
-//buf_for_serializing=(unsigned char *)malloc(16384); //(unsigned char *)malloc(MAX_LENGTH_SERIALIZATION);
-//printf("ssss %d %d\n", SERIALIZATION_CYCGRPZP_RATIO,MAX_LENGTH_SERIALIZATION);
+  if (SERIALIZATION_CYCGRPZP_RATIO < ((Order_bits - 1) / 256 + 1) * 3)
+    {
+      printf
+	("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile\n",
+	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
+      Log2
+	("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile",
+	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
+      exit (1);
+    }
 #if PARALLELISM == 1
   {
     int i;
@@ -96,13 +136,13 @@ exit(1);
 #endif
   return 0;
 }
+#endif
 
 void
 generate_public_key (CycGrpG * PK, const CycGrpZp * sk)
 {
   CycGrpG_new (PK);
   CycGrpG_mul (PK, CycGrpGenerator, sk);
-
 }
 
 void
@@ -158,14 +198,16 @@ CycGrpZp_toHexString (const CycGrpZp * a)
   return s;
 }
 
-void
+int
 CycGrpZp_fromHexString (CycGrpZp * x, const char *s)
 {
+  int ret;
 //CycGrpZp_deserialize(x,(unsigned char *)s,strlen(s));
 #if CYC_GRP_BLS_G1 == 1
-  mclBnFr_setStr (x, s, strlen (s), 16);
+  return mclBnFr_setStr (x, s, strlen (s), 16);
+
 #else
-  CycGrpZp_deserialize (x, (unsigned char *) s, strlen (s));
+  return CycGrpZp_deserialize (x, (unsigned char *) s, strlen (s));
 #endif
 }
 
@@ -181,18 +223,22 @@ CycGrpG_toHexString (const CycGrpG * a)
   strncpy (s, buf, len);
   s[len] = '\0';
 #else
+#if CYC_GRP_RSA == 1
+  s = BN_bn2hex (a->P);
+#else
   s = EC_POINT_point2hex (ec_group, a->P, POINT_CONVERSION_COMPRESSED, NULL);
+#endif
 #endif
   return s;
 }
 
-void
+int
 CycGrpG_fromHexString (CycGrpG * g, const char *s)
 {
 //CycGrpG_deserialize(g,(unsigned char *)s,strlen(s));
 #if CYC_GRP_BLS_G1 == 1
-  mclBnG1_setStr (g, s, strlen (s), 16);
+  return mclBnG1_setStr (g, s, strlen (s), 16);
 #else
-  CycGrpG_deserialize (g, (unsigned char *) s, strlen (s));
+  return CycGrpG_deserialize (g, (unsigned char *) s, strlen (s));
 #endif
 }

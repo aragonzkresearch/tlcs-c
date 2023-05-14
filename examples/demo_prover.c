@@ -89,7 +89,7 @@ main (int argc, char **argv)
 #if _DEBUG_ == 1
   end = clock ();
   time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-Log3b(t);  
+  Log3b (t);
 #endif
 
   serialized_proof = SerializePartyOutput (&P.PK, &P.pi, &len);

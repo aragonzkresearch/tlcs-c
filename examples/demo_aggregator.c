@@ -12,7 +12,7 @@
 #include "cyclic_group.h"
 #include "simulated_loe.h"
 #include "err.h"
-#define NUM_PARTIES 2
+#define MAX_NUM_PARTIES 10
 
 #if CYC_GRP_BLS_G1 == 1
 
@@ -27,8 +27,8 @@ int
 main (int argc, char **argv)
 {
   int i;
-  TLCSParty P[NUM_PARTIES];
-  bool verified_proof[NUM_PARTIES];
+  TLCSParty P[MAX_NUM_PARTIES];
+  bool verified_proof[MAX_NUM_PARTIES];
   CycGrpG GPK;
   char *serialized_proof;
   FILE *fp, *fp2;
@@ -81,9 +81,13 @@ main (int argc, char **argv)
   rewind (fp);
   fread (serialized_proof, 1, len, fp);
   fclose (fp);
-  for (i = 0; i < NUM_PARTIES; i++)
+  for (i = 0;; i++)
     {
 
+      if (argv[i + 3] == NULL)
+	{
+	  break;
+	}
       DeserializePartyOutput (&P[i].PK, &P[i].pi, serialized_proof, &len);
       serialized_proof += len;
       if (atoi (argv[i + 3]) == 1)
@@ -99,7 +103,7 @@ main (int argc, char **argv)
   CycGrpG_new (&GPK);
 #endif
 
-  AggregatePublicKeys (&GPK, P, NUM_PARTIES, verified_proof);
+  AggregatePublicKeys (&GPK, P, i, verified_proof);
   fprintf (fp2, "%s", CycGrpG_toHexString (&GPK));
   fclose (fp2);
   Err ();

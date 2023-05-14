@@ -71,6 +71,9 @@ main ()
 #if CYC_GRP_BLS_G1 == 1
   ASSERT (!group_init ());
 #else
+#if CYC_GRP_RSA == 1
+  ASSERT (!group_init ("35", "12"));
+#else
 //ASSERT(!group_init(NID_X9_62_prime256v1));
   printf
     ("For which curve do you want to generate the public keys?\nYou need to insert a valid NID number supported by openssl.\nSee in /usr/include/openssl/obj_mac.h\nExamples:\n\t* 714 for secp256k1\n\t* 415 for prime256v1\nInsert your choice:\n[No checks will be done so if the integer you insert is not valid the behavior will be unpredictable]\n");
@@ -79,6 +82,7 @@ main ()
     scanf ("%d", &nid);
     ASSERT (!group_init (nid));
   }
+#endif
 #endif
   generate_loe_publickey ();
 
@@ -111,7 +115,7 @@ main ()
 #if _DEBUG_ == 1
       end = clock ();
       time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-      Log3(i,time_spent);
+      Log3 (i, time_spent);
 #endif
       serialized_proof = SerializePartyOutput (&P[i].PK, &P[i].pi, NULL);
       DeserializePartyOutput (&P2[i].PK, &P2[i].pi, serialized_proof, NULL);
@@ -123,7 +127,7 @@ main ()
 #if _DEBUG_ == 1
       end = clock ();
       time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-	      Log4(i, time_spent);
+      Log4 (i, time_spent);
 #endif
       if (ret == 0)
 	verified_proof[i] = true;
@@ -178,8 +182,7 @@ main ()
 #if _DEBUG_ == 1
 	end = clock ();
 	time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
-	Log5 (NUM_PARTIES,
-		time_spent);
+	Log5 (NUM_PARTIES, time_spent);
 #endif
 	generate_public_key (&Recovered_PK, &gsk);
 	if (!CycGrpG_isEqual (&Recovered_PK, &GPK))
@@ -191,10 +194,12 @@ main ()
 	  }
 #if _DEBUG_ == 1
 	else
-	 { 
-	   printf("general secret key for round %lu successfully inverted\n",round);
-Log6 (round);
-}
+	  {
+	    printf
+	      ("general secret key for round %lu successfully inverted\n",
+	       round);
+	    Log6 (round);
+	  }
 #endif
       }
   }

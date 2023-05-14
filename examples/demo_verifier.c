@@ -88,10 +88,15 @@ main (int argc, char **argv)
   while (1)
     {
 
-      DeserializePartyOutput (&P[i].PK, &P[i].pi, serialized_proof + tmplen,
-			      &size);
-      tmplen += size;
+      if (DeserializePartyOutput
+	  (&P[i].PK, &P[i].pi, serialized_proof + tmplen, &size) == -1)
+	{
+	  printf ("Error in Serializing the proof of party %d. Aborting\n",
+		  i);
+	  exit (1);
+	}
       ASSERT (!(ret = Verifier (&P[i].PK, &P[i].pi, round)));
+      tmplen += size;
       if (ret == 0)
 	{
 	  fprintf (fp2, " 1");

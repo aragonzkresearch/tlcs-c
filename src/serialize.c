@@ -10,6 +10,7 @@
 #include "tlcs.h"
 #include "pairing.h"
 #include "cyclic_group.h"
+#include "err.h"
 
 
 char *
@@ -82,9 +83,8 @@ len+=tmplen+1;
 
 
 
-void
-DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf,
-			size_t * size)
+int
+DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf, size_t * size)	// TODO: no check yet on y
 {
   int i, j;
   char *s = (char *) buf;
@@ -93,14 +93,23 @@ DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf,
 #else
   CycGrpG_new (PK);
 #endif
-  CycGrpG_fromHexString (PK, s);
+  if (CycGrpG_fromHexString (PK, s) == -1)
+    {
+      Log ("Error in deserializing the proof");
+      return -1;
+    }
 //printf("deserialized PK: %s\n",CycGrpG_toHexString(PK));
   s += strlen (s) + 1;
 
   for (i = 0; i < NUM_REPETITIONS; i++)	//deserialize CommitmentTuples
     for (j = 0; j < NUM_COLUMNS; j++)
       {
-	G2_fromHexString (&pi->C[i][j].T, s);	// deserialize C[i][j].T
+	if (G2_fromHexString (&pi->C[i][j].T, s) == -1)
+	  {			// deserialize C[i][j].T
+	    Log ("Error in deserializing the proof");
+	    return -1;
+	  }
+
 //printf("deserialized T[%d]: %s\n",j,G2_toHexString(&pi->C[i][j].T));
 	s += strlen (s) + 1;
 
@@ -108,7 +117,11 @@ DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf,
 #else
 	CycGrpG_new (&pi->C[i][j].PK);
 #endif
-	CycGrpG_fromHexString (&pi->C[i][j].PK, s);	// deserialize C[i][j].PK
+	if (CycGrpG_fromHexString (&pi->C[i][j].PK, s) == -1)
+	  {			// deserialize C[i][j].PK
+	    Log ("Error in deserializing the proof");
+	    return -1;
+	  }
 //printf("deserialized PK[%d]: %s\n",j,CycGrpG_toHexString(&pi->C[i][j].PK));
 	s += strlen (s) + 1;
 
@@ -133,7 +146,11 @@ CycGrpZp_fromHexString(&pi->O[i].sk,s); // deserialize O[i].sk
 printf("deserialized opened sk: %s\n",CycGrpZp_toHexString(&pi->O[i].sk));
 s+=strlen(s)+1;
 */
-      Zp_fromHexString (&pi->O[i].t, s);	// deserialize O[i].t
+      if (Zp_fromHexString (&pi->O[i].t, s) == -1)
+	{			// deserialize O[i].t
+	  Log ("Error in deserializing the proof");
+	  return -1;
+	}
 //printf("opened t[%d]: %s\n",i,Zp_toHexString(&pi->O[i].t));
       s += strlen (s) + 1;
 

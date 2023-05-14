@@ -54,8 +54,8 @@ G1_serialize (unsigned char *buf, size_t maxBufSize, const G1 * g)
 char *G1_toHexString (const G1 * g);
 char *G2_toHexString (const G2 * g);
 char *Zp_toHexString (const Zp * x);
-void G2_fromHexString (G2 * g, const char *s);
-void Zp_fromHexString (Zp * x, const char *s);
+int G2_fromHexString (G2 * g, const char *s);
+int Zp_fromHexString (Zp * x, const char *s);
 inline void
 Zp_copy (Zp * a, Zp * b)
 {

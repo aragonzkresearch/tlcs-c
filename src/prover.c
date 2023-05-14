@@ -42,19 +42,23 @@ SHA256_Update(&ctx, (unsigned char *)round, sizeof(uint64_t));
 }
 
 inline void
-XOR (unsigned char y[], CycGrpZp * sk, unsigned char sha256_digest[])
+XOR (unsigned char y[], CycGrpZp * sk, unsigned char sha256_digest[])	// sha256_digest is not 32 bytes but 32*SERIALIZATION_CYCGRPZP_RATIO
 {
   int i;
 #if PARALLELISM == 1
   unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
 //int length=CycGrpZp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),sk); 
 //ASSERT(length);
+  memset ((void *) buf_parallel_safe, 0,
+	  SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO);
   CycGrpZp_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, sk);
   for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
     y[i] = (unsigned char) (buf_parallel_safe[i] ^ sha256_digest[i]);
 #else
 //int length=CycGrpZp_serialize(buf_for_serializing,sizeof(buf_for_serializing),sk); 
 //ASSERT(length);
+  memset ((void *) buf_for_serializing, 0,
+	  SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO);
   CycGrpZp_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, sk);
   for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
     y[i] = (unsigned char) (buf_for_serializing[i] ^ sha256_digest[i]);
