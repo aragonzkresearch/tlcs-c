@@ -111,9 +111,16 @@ main (int argc, char **argv)
   while (1)
     {
 
-      DeserializePartyOutput (&P[i].PK, &P[i].pi, serialized_proof + tmplen,
-			      &size);
+      if (DeserializePartyOutput
+	  (&P[i].PK, &P[i].pi, serialized_proof + tmplen, &size) == -1)
+	{
+	  printf ("Error in deserializing the proof of party %d. Aborting\n",
+		  i);
+	  exit (1);
+	}
       tmplen += size;
+      if (argv[i + 3] == NULL)
+	break;
       verified_proof[i] = (int) atoi (argv[i + 3]);
 
       i++;
@@ -140,7 +147,7 @@ main (int argc, char **argv)
 	generate_public_key (&Recovered_PK, &gsk);
 	if (!CycGrpG_isEqual (&Recovered_PK, &GPK))
 	  {			// check that g^{gsk} =GPK 
-	    Log2 ("Error in inversion for party", i);
+	    Log ("Error in inversion");
 	    return 1;
 	  }
 	else

@@ -84,7 +84,7 @@ len+=tmplen+1;
 
 
 int
-DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf, size_t * size)	// TODO: no check yet on y
+DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf, size_t * size)	// TODO: we assume that the string buf is sufficiently long to prevent buffer overflows. Precisely, buf should be as long as the length of a proof for the given configuration you choose
 {
   int i, j;
   char *s = (char *) buf;

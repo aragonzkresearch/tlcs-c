@@ -91,7 +91,7 @@ main (int argc, char **argv)
       if (DeserializePartyOutput
 	  (&P[i].PK, &P[i].pi, serialized_proof + tmplen, &size) == -1)
 	{
-	  printf ("Error in Serializing the proof of party %d. Aborting\n",
+	  printf ("Error in deserializing the proof of party %d. Aborting\n",
 		  i);
 	  exit (1);
 	}

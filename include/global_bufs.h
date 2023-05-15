@@ -8,10 +8,18 @@
 #if CYC_GRP_BLS_G1==1
 #define SERIALIZATION_CYCGRPZP_RATIO 1
 #else
+#if CYC_GRP_RSA == 1
+#define SERIALIZATION_CYCGRPZP_RATIO 33
+#else
 #define SERIALIZATION_CYCGRPZP_RATIO 3
 #endif
+#endif
 
-#define MAX_LENGTH_SERIALIZATION 16384
+#if CYC_GRP_RSA == 1
+#define MAX_LENGTH_SERIALIZATION (1<<15)
+#else
+#define MAX_LENGTH_SERIALIZATION 1024
+#endif
 extern unsigned char buf_for_serializing[MAX_LENGTH_SERIALIZATION];
 extern unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH *
 				     SERIALIZATION_CYCGRPZP_RATIO];
