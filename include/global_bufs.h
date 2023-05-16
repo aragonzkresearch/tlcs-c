@@ -15,11 +15,7 @@
 #endif
 #endif
 
-#if CYC_GRP_RSA == 1
 #define MAX_LENGTH_SERIALIZATION (1<<15)
-#else
-#define MAX_LENGTH_SERIALIZATION 1024
-#endif
 extern unsigned char buf_for_serializing[MAX_LENGTH_SERIALIZATION];
 extern unsigned char buf_for_hashing[SHA256_DIGEST_LENGTH *
 				     SERIALIZATION_CYCGRPZP_RATIO];

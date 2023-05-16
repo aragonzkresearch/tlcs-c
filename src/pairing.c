@@ -123,3 +123,21 @@ Zp_fromHexString (Zp * x, const char *s)
 //Zp_deserialize(x,s,strlen(s));
   return mclBnFr_setStr (x, s, strlen (s), 16);
 }
+
+size_t
+GT_toHexString (char *buf,const GT * e) // copy the string in hex and returns the length in *size (the length include the null terminating character)
+{
+//int len=G2_serialize(buf,MAX_LENGTH_SERIALIZATION,g);
+  mclBn_setETHserialization (1);
+  size_t len = mclBnGT_getStr (buf, MAX_LENGTH_SERIALIZATION, e,
+			    MCLBN_IO_SERIALIZE_HEX_STR);
+  if (len == 0)
+    {
+      mclBn_setETHserialization (0);
+return 0;
+    }
+  //strncpy (s, buf, len);
+  buf[len] = '\0';
+  mclBn_setETHserialization (0);
+  return len+1;
+}

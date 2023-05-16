@@ -68,15 +68,16 @@ XOR (unsigned char y[], CycGrpZp * sk, unsigned char sha256_digest[])	// sha256_
 inline int
 HashGTToBytes (unsigned char *buf, GT * e)
 {
-
+size_t length;
 #if PARALLELISM == 1
   unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
-  int length = GT_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, e);	// with BLS12-381 pairing length should 576 bytes
+//  int length = GT_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, e);	// with BLS12-381 pairing length should 576 bytes
+length=GT_toHexString ((char *)buf_parallel_safe,e);	
   ASSERT (length);
   if (!length)
     return 1;
 #if CYC_GRP_BLS_G1 == 1
-  SHA256 (buf_parallel_safe, length, buf);
+  SHA256 (buf_parallel_safe, length, buf); 
 #else
   {
     int k;
@@ -89,11 +90,12 @@ HashGTToBytes (unsigned char *buf, GT * e)
 #endif
 
 #else
-  int length = GT_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, e);	// with BLS12-381 pairing length should 576 bytes
+  //int length = GT_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, e);	// with BLS12-381 pairing length should 576 bytes
+  length=  GT_toHexString ((char *)buf_for_serializing,e);
+//printf("GT: %d %s\n",length,buf_for_serializing);
   ASSERT (length);
   if (!length)
     return 1;
-
 #if CYC_GRP_BLS_G1 == 1
   SHA256 (buf_for_serializing, length, buf);
 #else
@@ -112,10 +114,6 @@ HashGTToBytes (unsigned char *buf, GT * e)
 
 }
 
-//static unsigned char tmp_bytes[8];
-//inline static void round_to_bytes(unsigned char *bytes,uint64_t *round){
-//memcpy(bytes,round,sizeof(uint64_t));
-//}
 
 inline void
 HashRoundToG1 (G1 * g1, uint64_t * round)
