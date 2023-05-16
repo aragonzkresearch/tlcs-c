@@ -22,9 +22,9 @@ The APIs can be divided in routines for:
 * aggregation of the participants' public keys in `src/aggregate.c` 
 
 ##  News
-16-May-2023 Added experimental support for babyjubjub ec.
-14-May-2023 Added support for RSA.
-07-May-2023 Launch!
+* 16-May-2023 Added experimental support for babyjubjub ec.
+* 14-May-2023 Added support for RSA.
+* 07-May-2023 Launch!
 
 ## Demo
 The source code contains a file * `example/tlcs.c` implementing a demo simulation of a TLCS activity using the routines in the library. 
