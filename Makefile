@@ -9,6 +9,8 @@ MCL_INCLUDE_PATH=mcl/include
 IOPT=-I $(MCL_INCLUDE_PATH) -I ./include
 LDFLAGS=-lcrypto mcl/lib/libmclbn384_256.a mcl/lib/libmcl.a 
 all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1
+babyjubjub.o: src/babyjubjub.c
+	$(CC) -o src/babyjubjub.o $(CCOPT) $(IOPT) $(DFLAGS0) -c src/babyjubjub.c
 cyclic_group.o: src/cyclic_group.c
 	$(CC) -o src/cyclic_group.o $(CCOPT) $(IOPT) $(DFLAGS0) -c src/cyclic_group.c
 cyclic_group_bls_g1.o: src/cyclic_group.c
@@ -69,8 +71,8 @@ simulated_loe_bls_g1.o: src/tests/simulated_loe.c
 	$(CC) -o src/tests/simulated_loe_bls_g1.o $(CCOPT) $(IOPT) $(DFLAGS1) -c src/tests/simulated_loe.c
 simulated_loe_rsa.o: src/tests/simulated_loe.c
 	$(CC) -o src/tests/simulated_loe_rsa.o $(CCOPT) $(IOPT) $(DFLAGS3) -c src/tests/simulated_loe.c
-libtlcs: cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o global_bufs.o serialize.o
-	$(CC) -shared -o ./lib/libtlcs.so -fPIC src/prover.o -fPIC src/verifier.o -fPIC src/aggregate.c -fPIC src/invert.o -fPIC src/global_bufs.o -fPIC src/err.o -fPIC src/serialize.o -fPIC src/cyclic_group.o -fPIC src/pairing.o -fPIC src/tests/simulated_loe.o $(CCOPT) $(LDFLAGS) $(IOPT) $(DFLAGS0) 
+libtlcs: cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o global_bufs.o serialize.o babyjubjub.o
+	$(CC) -shared -o ./lib/libtlcs.so -fPIC src/prover.o -fPIC src/verifier.o -fPIC src/aggregate.c -fPIC src/invert.o -fPIC src/global_bufs.o -fPIC src/err.o -fPIC src/babyjubjub.o -fPIC src/serialize.o -fPIC src/cyclic_group.o -fPIC src/pairing.o -fPIC src/tests/simulated_loe.o $(CCOPT) $(LDFLAGS) $(IOPT) $(DFLAGS0) 
 libtlcs_bls_g1: cyclic_group_bls_g1.o err_bls_g1.o pairing_bls_g1.o prover_bls_g1.o verifier_bls_g1.o invert_bls_g1.o aggregate_bls_g1.o serialize_bls_g1.o simulated_loe_bls_g1.o global_bufs_bls_g1.o serialize_bls_g1.o
 libtlcs_rsa: cyclic_group_rsa.o err_rsa.o pairing_rsa.o prover_rsa.o verifier_rsa.o invert_rsa.o aggregate_rsa.o serialize_rsa.o simulated_loe_rsa.o global_bufs_rsa.o serialize_rsa.o
 	$(CC) -shared -o ./lib/libtlcs_rsa.so -fPIC src/prover_rsa.o -fPIC src/verifier_rsa.o -fPIC src/aggregate_rsa.o -fPIC src/invert_rsa.o -fPIC src/global_bufs_rsa.o -fPIC src/err_rsa.o -fPIC src/serialize_rsa.o -fPIC src/cyclic_group_rsa.o -fPIC src/pairing_rsa.o -fPIC src/tests/simulated_loe_rsa.o $(CCOPT) $(LDFLAGS) $(IOPT) $(DFLAGS3) 
@@ -89,7 +91,7 @@ demo_aggregator: examples/demo_aggregator.c libtlcs
 	$(CC) -o  bin/demo_aggregator examples/demo_aggregator.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
 demo_invert: examples/demo_invert.c libtlcs
 	$(CC) -o  bin/demo_invert examples/demo_invert.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
-tests: examples/tests.c cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o global_bufs.o
-	$(CC) -o  bin/tests src/cyclic_group.o src/err.o src/pairing.o src/prover.o src/verifier.o src/aggregate.o src/invert.o src/serialize.o src/tests/simulated_loe.o examples/tests.c src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS0) $(CCOPT)
+tests: examples/tests.c cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o global_bufs.o babyjubjub.o
+	$(CC) -o  bin/tests src/cyclic_group.o src/err.o src/pairing.o src/prover.o src/verifier.o src/aggregate.o src/invert.o src/serialize.o src/babyjubjub.o src/tests/simulated_loe.o examples/tests.c src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS0) $(CCOPT)
 clean:
 	rm -f bin/tlcs /bin/tlcs_bls_g1 bin/tests *.o src/*.o examples/*.o /bin/demo* src/*.o lib/*.so

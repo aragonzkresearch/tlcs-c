@@ -98,7 +98,10 @@ int
 group_init (int curve_type)
 {
   Log_init ();
-  ec_group = EC_GROUP_new_by_curve_name (curve_type);
+  if (curve_type == 0)
+    ec_group = babyjubjub_init ();
+  else
+    ec_group = EC_GROUP_new_by_curve_name (curve_type);
   if (ec_group == NULL)
     {
       printf ("err in initializing the group\n");

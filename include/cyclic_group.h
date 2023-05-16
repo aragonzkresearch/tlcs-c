@@ -186,6 +186,7 @@ CycGrpZp_new (CycGrpZp * x)
 }
 
 extern CycGrpG *CycGrpGenerator;
+EC_GROUP *babyjubjub_init (void);
 #endif
 void CycGrpZp_copy (CycGrpZp * a, const CycGrpZp * b);
 void CycGrpG_copy (CycGrpG * a, const CycGrpG * b);

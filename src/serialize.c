@@ -157,6 +157,7 @@ s+=strlen(s)+1;
     }
   if (size != NULL)
     *size = s - buf;
+  return 0;
 }
 
 

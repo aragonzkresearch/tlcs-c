@@ -62,7 +62,7 @@ main (int argc, char **argv)
 #else
 //ASSERT(!group_init(NID_X9_62_prime256v1));
   printf
-    ("For which curve have the public keys been generated?\nYou need to insert a valid NID number supported by openssl.\nSee in /usr/include/openssl/obj_mac.h\nExamples:\n\t* 714 for secp256k1\n\t* 415 for prime256v1\nInsert your choice:\n[No checks will be done so if the integer you insert is not valid the behavior will be unpredictable]\n");
+    ("For which curve do you want to generate the public keys?\nYou need to insert a valid NID number supported by openssl or 0 for babujubjub.\nSee in /usr/include/openssl/obj_mac.h\nExamples:\n\t* 0 for babyjubjub\n\t* 714 for secp256k1\n\t* 415 for prime256v1\nInsert your choice:\n[No checks will be done so if the integer you insert is not valid the behavior will be unpredictable]\n");
   {
     int nid;
     scanf ("%d", &nid);
