@@ -32,9 +32,13 @@ extern CycGrpG CycGrpGenerator;
 #include <string.h>
 #include <openssl/ec.h>
 extern BN_CTX *bn_ctx;
+extern int Order_bits;
 #if CYC_GRP_RSA == 1
 int group_init (const char *RSA_modulus, const char *RSA_pk);
 #else
+extern int bjj_flag;		// we set to 1 if we use babyjubjub
+int TwistedEdwards2Weierstrass (char *W, const char *E);
+void Weierstrass2TwistedEdwards (char *E, const char *W);
 int group_init (int type);
 #endif
 extern EC_GROUP *ec_group;
@@ -57,7 +61,6 @@ extern BIGNUM *RSA_pk;
 #else
 extern CycGrpZp Order;
 #endif
-extern int Order_bits;
 // NOTE: deserialize and serialize bot for CycGrpG and CycGrpZp may behave differently accordingly on whether CYC_GRG_BLS_G1= 1 or 0. 
 // Currently _serialize functions work exactly as _toHexStr functions but we keep it separate in view of future changes (e.g., serialize to binary to improve efficiency).
 inline int
@@ -193,6 +196,7 @@ void CycGrpG_copy (CycGrpG * a, const CycGrpG * b);
 char *CycGrpZp_toHexString (const CycGrpZp * a);	// convert point in Hex string. When CYC_GRP_BLS_G1=1 the representation is like the one described here:
 // https://github.com/herumi/mcl/blob/master/api.md for ioMode=16. Otherwise, it uses the serialization of openssl. The strings are always terminated by the null character '\0'.
 char *CycGrpG_toHexString (const CycGrpG * a);
+char *CycGrpG_toHexStringUncompressed (const CycGrpG * a);
 int CycGrpZp_fromHexString (CycGrpZp * x, const char *s);
 int CycGrpG_fromHexString (CycGrpG * a, const char *s);
 void generate_secret_key (CycGrpZp * sk);

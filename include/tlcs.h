@@ -26,11 +26,10 @@ extern int g_err;
 */
 
 
-
 typedef struct
 {
   G2 T;				// serialized element of G2 in hexadecimal
-  CycGrpG PK;			// serialized element of CycGrpG in hexadecimal
+  CycGrpG PK;			// serialized element of CycGrpG in hexadecimal in compressed form (except for babyjubjub  that is uncompressed)
   unsigned char y[SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO];	// we serialize Zp in hexadecimal, so if a secret key sk has 32 bytes it will be converted in hexadecimale in 32*2 bytes but we include the ending null character and we pad with zeroes we end up with a string of 96 bytes. If a secret key has 64 bytes, it will be convered in hex in 64*2 bytes +  32 byte more for the null character and padding. In general we need SHA256_DIGEST_LENGTH*(2*Zp_length)+1, where Zp_length is the byte length of elements in Zp. For this reason  SERIALIZATION_CYCGRPZP_RATIO should be set to 3 for groups of order of bit length 256, to 5 for groups of order of bit length 512, etc.
 //for numbers of 512 bits we will need 
 
@@ -49,7 +48,7 @@ typedef struct
 typedef struct
 {
   CycGrpZp sk;
-  CycGrpG PK;
+  CycGrpG PK;			// serialized element of CycGrpG in hexadecimal in compressed form (except for babyjubjub  that is uncompressed)
   Proof pi;
 } TLCSParty;
 

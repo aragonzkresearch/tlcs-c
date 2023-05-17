@@ -93,6 +93,7 @@ group_init (const char *modulus, const char *pk)
   return 0;
 }
 #else
+int bjj_flag = 0;		// we set to 1 if we use babyjubjub
 CycGrpZp Order;
 int
 group_init (int curve_type)
@@ -204,7 +205,6 @@ CycGrpZp_toHexString (const CycGrpZp * a)
 int
 CycGrpZp_fromHexString (CycGrpZp * x, const char *s)
 {
-  int ret;
 //CycGrpZp_deserialize(x,(unsigned char *)s,strlen(s));
 #if CYC_GRP_BLS_G1 == 1
   return mclBnFr_setStr (x, s, strlen (s), 16);
@@ -230,6 +230,28 @@ CycGrpG_toHexString (const CycGrpG * a)
   s = BN_bn2hex (a->P);
 #else
   s = EC_POINT_point2hex (ec_group, a->P, POINT_CONVERSION_COMPRESSED, NULL);
+#endif
+#endif
+  return s;
+}
+
+char *
+CycGrpG_toHexStringUncompressed (const CycGrpG * a)
+{
+  char *s;
+#if CYC_GRP_BLS_G1 == 1
+  char buf[MAX_LENGTH_SERIALIZATION];
+  size_t len;
+  len = mclBnG1_getStr (buf, MAX_LENGTH_SERIALIZATION, a, 16);
+  s = (char *) malloc (len + 1);
+  strncpy (s, buf, len);
+  s[len] = '\0';
+#else
+#if CYC_GRP_RSA == 1
+  s = BN_bn2hex (a->P);
+#else
+  s =
+    EC_POINT_point2hex (ec_group, a->P, POINT_CONVERSION_UNCOMPRESSED, NULL);
 #endif
 #endif
   return s;

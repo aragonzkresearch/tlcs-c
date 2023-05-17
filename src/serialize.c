@@ -21,7 +21,17 @@ SerializePartyOutput (const CycGrpG * PK, const Proof * pi, size_t * size)
   int i, j;
   size_t len = 0, tmplen;
 // serialize PK
+#if CYC_GRP_RSA == 1 || CYC_GRP_BLS_G1 == 1
   tmps = CycGrpG_toHexString (PK);
+#else
+  if (bjj_flag)
+    {
+      tmps = (char *) malloc (131);	// 131 is the length of a serialized bjj point
+      Weierstrass2TwistedEdwards (tmps, CycGrpG_toHexStringUncompressed (PK));
+    }
+  else
+    tmps = CycGrpG_toHexString (PK);
+#endif
 //printf("PK: %s\n",tmps);
   tmplen = strlen (tmps);
   strcpy (s, tmps);
@@ -38,10 +48,25 @@ SerializePartyOutput (const CycGrpG * PK, const Proof * pi, size_t * size)
 	strcpy (s + len, tmps);
 	len += tmplen + 1;
 //free(tmps);
-
+#if CYC_GRP_RSA == 1 || CYC_GRP_BLS_G1 == 1
 	tmps = CycGrpG_toHexString (&pi->C[i][j].PK);	// serialize C[i][j].PK
+#else
+	if (bjj_flag)
+	  {
+	    tmps = (char *) malloc (131);
+	    memset (tmps, 0, 131);
+	    Weierstrass2TwistedEdwards (tmps,
+					CycGrpG_toHexStringUncompressed (&pi->
+									 C[i]
+									 [j].
+									 PK));
+	  }
+	else
+	  tmps = CycGrpG_toHexString (&pi->C[i][j].PK);	// serialize C[i][j].PK
+#endif
 //printf("PK[%d]: %s\n",j,tmps);
 	tmplen = strlen (tmps);
+//if (tmplen<80) printf("tmps: %s,uncompressed PK[%d][%d]: %s compressed: %s\n",tmps,i,j,CycGrpG_toHexStringUncompressed(&pi->C[i][j].PK),CycGrpG_toHexString(&pi->C[i][j].PK));
 	strcpy (s + len, tmps);
 	len += tmplen + 1;
 //free(tmps);
@@ -93,11 +118,33 @@ DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf, size_t * size
 #else
   CycGrpG_new (PK);
 #endif
+#if CYC_GRP_RSA == 1 || CYC_GRP_BLS_G1 == 1
   if (CycGrpG_fromHexString (PK, s) == -1)
     {
       Log ("Error in deserializing the proof");
       return -1;
     }
+#else
+  if (bjj_flag)
+    {
+      char W[131];
+      int ret;
+      ret = TwistedEdwards2Weierstrass (W, s);
+      char E[131];
+      Weierstrass2TwistedEdwards (E, W);
+      if (ret == 1 || CycGrpG_fromHexString (PK, W) == -1)
+	{
+//printf("dsldslkfl ret:%d s:%s W:%s E:%s\n",ret,s,W,E);
+	  Log ("Error in deserializing the proof");
+	  return -1;
+	}
+    }
+  else if (CycGrpG_fromHexString (PK, s) == -1)
+    {
+      Log ("Error in deserializing the proof");
+      return -1;
+    }
+#endif
 //printf("deserialized PK: %s\n",CycGrpG_toHexString(PK));
   s += strlen (s) + 1;
 
@@ -117,11 +164,33 @@ DeserializePartyOutput (CycGrpG * PK, Proof * pi, const char *buf, size_t * size
 #else
 	CycGrpG_new (&pi->C[i][j].PK);
 #endif
+#if CYC_GRP_RSA == 1 || CYC_GRP_BLS_G1 == 1
 	if (CycGrpG_fromHexString (&pi->C[i][j].PK, s) == -1)
 	  {			// deserialize C[i][j].PK
 	    Log ("Error in deserializing the proof");
 	    return -1;
 	  }
+#else
+	if (bjj_flag)
+	  {
+	    char W[131];
+	    int ret;
+	    ret = TwistedEdwards2Weierstrass (W, s);
+	    char E[131];
+	    Weierstrass2TwistedEdwards (E, W);
+	    if (ret == 1 || CycGrpG_fromHexString (&pi->C[i][j].PK, W) == -1)
+	      {
+//printf("dsldslkfl i:%d j:%d ret:%d s:%s W:%s E:%s\n",i,j,ret,s,W,E);
+		Log ("Error in deserializing the proof");
+		return -1;
+	      }
+	  }
+	else if (CycGrpG_fromHexString (&pi->C[i][j].PK, s) == -1)
+	  {			// deserialize C[i][j].PK
+	    Log ("Error in deserializing the proof");
+	    return -1;
+	  }
+#endif
 //printf("deserialized PK[%d]: %s\n",j,CycGrpG_toHexString(&pi->C[i][j].PK));
 	s += strlen (s) + 1;
 
