@@ -56,10 +56,8 @@ SerializePartyOutput (const CycGrpG * PK, const Proof * pi, size_t * size)
 	    tmps = (char *) malloc (131);
 	    memset (tmps, 0, 131);
 	    Weierstrass2TwistedEdwards (tmps,
-					CycGrpG_toHexStringUncompressed (&pi->
-									 C[i]
-									 [j].
-									 PK));
+					CycGrpG_toHexStringUncompressed
+					(&pi->C[i][j].PK));
 	  }
 	else
 	  tmps = CycGrpG_toHexString (&pi->C[i][j].PK);	// serialize C[i][j].PK

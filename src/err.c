@@ -31,6 +31,7 @@ Log (char *msg)
   if (!LOG_FP)
     return;
   fprintf (LOG_FP, "%s: %s\n", ctime (&current), msg);
+  fflush (LOG_FP);
 
 
 }
@@ -46,6 +47,7 @@ Log2 (char *msg, int i)
   fprintf (LOG_FP, "%s: %s %d\n", ctime (&current), msg, i);
 
 
+  fflush (LOG_FP);
 }
 
 void
@@ -53,7 +55,6 @@ Log3 (int i, double t)
 {
   time_t current;
   current = time (NULL);
-
   if (!LOG_FP)
     return;
 
@@ -61,6 +62,7 @@ Log3 (int i, double t)
 	   "%s: time spent by party %d in computing his public key and proof: %fs\n",
 	   ctime (&current), i, t);
 
+  fflush (LOG_FP);
 }
 
 void
@@ -76,6 +78,7 @@ Log3b (double t)
 	   "%s: time spent by the party in computing his public key and proof: %fs\n",
 	   ctime (&current), t);
 
+  fflush (LOG_FP);
 }
 
 void
@@ -91,6 +94,7 @@ Log4 (int i, double t)
 	   "%s: time spent by verifier on verifying proof of party %d: %fs\n",
 	   ctime (&current), i, t);
 
+  fflush (LOG_FP);
 }
 
 void
@@ -105,6 +109,7 @@ Log5 (int i, double t)
   fprintf (LOG_FP, "%s: time spent in inversion for %d parties: %fs\n",
 	   ctime (&current), i, t);
 
+  fflush (LOG_FP);
 }
 
 void
@@ -120,6 +125,7 @@ Log6 (uint64_t round)
 	   "%s: general secret key for round %lu successfully inverted\n",
 	   ctime (&current), round);
 
+  fflush (LOG_FP);
 }
 
 void
@@ -130,11 +136,13 @@ Err (void)
   if (g_err)
     {
       fprintf (LOG_FP, "%s: err %d\n", ctime (&current), g_err);
+      fflush (LOG_FP);
       exit (1);
     }
   else
     {
       fprintf (LOG_FP, "%s: no err\n", ctime (&current));
+      fflush (LOG_FP);
       return;
     }
 }

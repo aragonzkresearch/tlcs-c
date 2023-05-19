@@ -42,7 +42,11 @@ InvertAggregate (CycGrpZp * gsk, TLCSParty P[], size_t num_parties,
   for (i = 0; i < num_parties; i++)
     if (verified_proof[i] == true)
       {
+#if _SECRET_SHARING_ == 1
+	if (!Invert_SS (&inverted_sk, &P[i].PK, Signature, &P[i].pi))
+#else
 	if (!Invert (&inverted_sk, &P[i].PK, Signature, &P[i].pi))
+#endif
 	  {
 	    if (!flag)
 	      {

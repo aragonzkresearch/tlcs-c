@@ -85,7 +85,11 @@ main (int argc, char **argv)
 #endif
 /* here, do your time-consuming job */
 
+#if _SECRET_SHARING_ == 1
+  ASSERT (!Prover_SS (&P, round));
+#else
   ASSERT (!Prover (&P, round));
+#endif
 #if _DEBUG_ == 1
   end = clock ();
   time_spent = (double) (end - begin) / CLOCKS_PER_SEC;

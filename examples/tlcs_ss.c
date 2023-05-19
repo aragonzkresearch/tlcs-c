@@ -71,16 +71,6 @@ main ()
 #if CYC_GRP_BLS_G1 == 1
   ASSERT (!group_init ());
 #else
-#if CYC_GRP_RSA == 1
-  printf
-    ("For which RSA modulus N and RSA public key d do you want to generate the public key for the TLCS?\nYou need to insert numbers in hexadecimal separated by space. The strings must represent integers of at most 8192 bits\nExamples:\na709e2f84ac0e21eb0caa018cf7f697f774e96f8115fc2359e9cf60b1dd8d4048d974cdf8422bef6be3c162b04b916f7ea2133f0e3e4e0eee164859bd9c1e0ef0357c142f4f633b4add4aab86c8f8895cd33fbf4e024d9a3ad6be6267570b4a72d2c34354e0139e74ada665a16a2611490debb8e131a6cffc7ef25e74240803dd71a4fcd953c988111b0aa9bbc4c57024fc5e8c4462ad9049c7f1abed859c63455fa6d58b5cc34a3d3206ff74b9e96c336dbacf0cdd18ed0c66796ce00ab07f36b24cbe3342523fd8215a8e77f89e86a08db911f237459388dee642dae7cb2644a03e71ed5c6fa5077cf4090fafa556048b536b879a88f628698f0c7b420c4b7 010001\nInsert your choice:\n[No checks will be done so if the strings you insert are not valid the behavior will be unpredictable]\n");
-  {
-    char RSAmodStr[8192 * 3], RSApkStr[8192 * 3];
-    scanf ("%s %s", RSAmodStr, RSApkStr);
-    ASSERT (!group_init (RSAmodStr, RSApkStr));
-  }
-  //ASSERT (!group_init ("a709e2f84ac0e21eb0caa018cf7f697f774e96f8115fc2359e9cf60b1dd8d4048d974cdf8422bef6be3c162b04b916f7ea2133f0e3e4e0eee164859bd9c1e0ef0357c142f4f633b4add4aab86c8f8895cd33fbf4e024d9a3ad6be6267570b4a72d2c34354e0139e74ada665a16a2611490debb8e131a6cffc7ef25e74240803dd71a4fcd953c988111b0aa9bbc4c57024fc5e8c4462ad9049c7f1abed859c63455fa6d58b5cc34a3d3206ff74b9e96c336dbacf0cdd18ed0c66796ce00ab07f36b24cbe3342523fd8215a8e77f89e86a08db911f237459388dee642dae7cb2644a03e71ed5c6fa5077cf4090fafa556048b536b879a88f628698f0c7b420c4b7", "010001"));
-#else
 //ASSERT(!group_init(NID_X9_62_prime256v1));
   printf
     ("For which curve do you want to generate the public keys?\nYou need to insert a valid NID number supported by openssl or 0 for babujubjub.\nSee in /usr/include/openssl/obj_mac.h\nExamples:\n\t* 0 for babyjubjub\n\t* 714 for secp256k1\n\t* 415 for prime256v1\nInsert your choice:\n[No checks will be done so if the integer you insert is not valid the behavior will be unpredictable]\n");
@@ -89,7 +79,6 @@ main ()
     scanf ("%d", &nid);
     ASSERT (!group_init (nid));
   }
-#endif
 #endif
   generate_loe_publickey ();
 
@@ -118,7 +107,7 @@ main ()
       begin = clock ();
 #endif
 
-      ASSERT (!Prover (&P[i], round));
+      ASSERT (!Prover_SS (&P[i], round));
 #if _DEBUG_ == 1
       end = clock ();
       time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
@@ -130,7 +119,7 @@ main ()
 #if _DEBUG_ == 1
       begin = clock ();
 #endif
-      ASSERT (!(ret = Verifier (&P2[i].PK, &P2[i].pi, round)));
+      ASSERT (!(ret = Verifier_SS (&P2[i].PK, &P2[i].pi, round)));
 #if _DEBUG_ == 1
       end = clock ();
       time_spent = (double) (end - begin) / CLOCKS_PER_SEC;

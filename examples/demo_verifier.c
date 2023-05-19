@@ -95,7 +95,11 @@ main (int argc, char **argv)
 		  i);
 	  exit (1);
 	}
+#if _SECRET_SHARING_ == 1
+      ASSERT (!(ret = Verifier_SS (&P[i].PK, &P[i].pi, round)));
+#else
       ASSERT (!(ret = Verifier (&P[i].PK, &P[i].pi, round)));
+#endif
       tmplen += size;
       if (ret == 0)
 	{

@@ -11,7 +11,9 @@
 #define CycGrpZp_isEqual(x,y) (Zp_isEqual(x,y))
 #define CycGrpG_add(h,u,v) (G1_add(h,u,v))
 #define CycGrpZp_add(z,x,y) (Zp_add(z,x,y))
+#define CycGrpZp_mul(z,x,y) (Zp_mul(z,x,y))
 #define CycGrpZp_sub(z,x,y) (Zp_sub(z,x,y))
+#define CycGrpZp_inverse(z,x) (Zp_inverse(z,x))
 #define CycGrpZp_setRand(x) (Zp_setRand(x))
 #define CycGrpG_setStr(g,gStr,len_gStr,base) (G1_setStr(g,gStr,len_gStr,base))
 #define CycGrpZp_serialize(buf,maxBufSize,x) (Zp_serialize(buf,maxBufSize,x))
@@ -103,6 +105,26 @@ CycGrpZp_add (CycGrpZp * z, const CycGrpZp * x, const CycGrpZp * y)
   BN_mod_mul (z->B, x->B, y->B, RSA_modulus, bn_ctx);
 #else
   BN_mod_add (z->B, x->B, y->B, Order.B, bn_ctx);
+#endif
+}
+
+#if CYC_GRP_RSA == 1
+// "CycGrpZp_mul not supported when compiling for RSA because this operation is used only for the Secret Sharing variant that does not generalize to RSA"
+#else
+inline void
+CycGrpZp_mul (CycGrpZp * z, const CycGrpZp * x, const CycGrpZp * y)
+{
+  BN_mod_mul (z->B, x->B, y->B, Order.B, bn_ctx);
+}
+#endif
+
+inline void
+CycGrpZp_inverse (CycGrpZp * z, const CycGrpZp * x)
+{
+#if CYC_GRP_RSA == 1
+  BN_mod_inverse (z->B, x->B, RSA_modulus, bn_ctx);
+#else
+  BN_mod_inverse (z->B, x->B, Order.B, bn_ctx);
 #endif
 }
 

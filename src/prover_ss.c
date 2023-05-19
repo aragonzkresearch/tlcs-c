@@ -13,7 +13,6 @@
 #if PARALLELISM == 1
 #include <omp.h>
 #endif
-
 #define get_bit(a,n) ( (a[n/8] & (((unsigned char)1U) << (n%8))) !=0  )
 static SHA256_CTX ctx;
 void
@@ -131,11 +130,54 @@ HashRoundToG1 (G1 * g1, uint64_t * round)
 //G1_hashAndMapTo(g1,&tmp_bytes[0],sizeof(uint64_t));
 }
 
+static inline void
+ComputeShares (CycGrpZp shares[], CycGrpZp * s)
+{				// s is the secret
+// p(x)=Ax+s
+// we evaluate it at points 1,..,NUM_COLUMNS
+  char iStr[8];
+  CycGrpZp A;
+  CycGrpZp tmp, tmp2;
+#if CYC_GRP_BLS_G1 == 1
+#else
+  CycGrpZp_new (&A);
+  CycGrpZp_new (&tmp);
+  CycGrpZp_new (&tmp2);
+#endif
+  CycGrpZp_setRand (&A);
+  int i;
+  for (i = 1; i <= NUM_COLUMNS; i++)
+    {
+#if CYC_GRP_BLS_G1 == 1
+#else
+      CycGrpZp_new (&shares[i - 1]);
+#endif
+//snprintf(iStr,8,"%x",i);
+      CycGrpZp_deserialize (&tmp2, (unsigned char *) iStr, 8);
+//printf("tmp2:%s\n",CycGrpZp_toHexString(&tmp2));
+      CycGrpZp_mul (&tmp, &A, &tmp2);
+      CycGrpZp_add (&shares[i - 1], &tmp, s);
 
-
+    }
+/*
+{
+CycGrpG PK1,PK2,PK,S;
+CycGrpG_new(&PK1);
+CycGrpG_new(&PK2);
+CycGrpG_new(&PK);
+CycGrpG_new(&S);
+CycGrpG_mul(&PK1,CycGrpGenerator,&shares[1]);
+CycGrpG_mul(&PK2,CycGrpGenerator,&shares[3]);
+CycGrpG_mul(&S,CycGrpGenerator,s);
+ComputeLagrangeCoeff();
+AddWithLagrangeCoeff(&PK,&PK1,&PK2,2,4);
+//printf("S:%s PK:%s\n",CycGrpG_toHexString(&S),CycGrpG_toHexString(&PK));
+}
+*/
+}
 
 int
-Prover (TLCSParty * P, uint64_t round)
+Prover_SS (TLCSParty * P, uint64_t round)
 {
   int i;
   CycGrpZp sk[NUM_REPETITIONS][NUM_COLUMNS];
@@ -159,37 +201,35 @@ Prover (TLCSParty * P, uint64_t round)
   {
 #pragma omp for
 #endif
+    int j;
     for (i = 0; i < NUM_REPETITIONS; i++)
       {
 #if CYC_GRP_BLS_G1 == 1
 #else
-	CycGrpZp_new (&sk[i][0]);
-	CycGrpZp_new (&sk[i][1]);
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  CycGrpZp_new (&sk[i][j]);
 #endif
-	CycGrpZp_setRand (&sk[i][0]);	// choose sk[i][0] randomly from Zq
-
-
-	Zp_setRand (&t[i][0]);	// choose random t[i][0] from Zp
-	Zp_setRand (&t[i][1]);
 #if PARALLELISM == 1
-	CycGrpZp_sub (&sk[i][1], &sk_parallel_safe[i], &sk[i][0]);
+	ComputeShares (sk[i], &sk_parallel_safe[i]);
 #else
-	CycGrpZp_sub (&sk[i][1], &P->sk, &sk[i][0]);	// sk[i][1]=sk-sk[i][0] so that sk=sk[i][0]+sk[i][1]
+	ComputeShares (sk[i], &P->sk);
 #endif
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  Zp_setRand (&t[i][j]);
 #if CYC_GRP_BLS_G1 == 1
 
-
-	CycGrpG_mul (&P->pi.C[i][0].PK, &CycGrpGenerator, &sk[i][0]);	// PK[i][0]=g^{sk[i][0]}
-	CycGrpG_mul (&P->pi.C[i][1].PK, &CycGrpGenerator, &sk[i][1]);
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  CycGrpG_mul (&P->pi.C[i][j].PK, &CycGrpGenerator, &sk[i][j]);
 #else
-	CycGrpG_new (&P->pi.C[i][0].PK);
-	CycGrpG_new (&P->pi.C[i][1].PK);
-	CycGrpG_mul (&P->pi.C[i][0].PK, CycGrpGenerator, &sk[i][0]);	// PK[i][0]=g^{sk[i][0]}
-	CycGrpG_mul (&P->pi.C[i][1].PK, CycGrpGenerator, &sk[i][1]);
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  {
+	    CycGrpG_new (&P->pi.C[i][j].PK);
+	    CycGrpG_mul (&P->pi.C[i][j].PK, CycGrpGenerator, &sk[i][j]);
+	  }
 #endif
 
-	G2_mul (&P->pi.C[i][0].T, &G2Generator, &t[i][0]);	// T[i][0]=g2^{t[i][0]} 
-	G2_mul (&P->pi.C[i][1].T, &G2Generator, &t[i][1]);
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  G2_mul (&P->pi.C[i][j].T, &G2Generator, &t[i][j]);
       }
 #if PARALLELISM == 1
   }
@@ -206,31 +246,27 @@ Prover (TLCSParty * P, uint64_t round)
 #endif
     for (i = 0; i < NUM_REPETITIONS; i++)
       {
-	/* powers the previously precomputed element e to t[i][0], t[i][1] 
-	   to compute the resp. elements Z[i][0], Z[i][1]
-	   for all i=0,..., NUM_REPETITIONS-1  
-	 */
 #if PARALLELISM == 1
-	GT_pow (&Z[i][0], &e_parallel_safe[i], &t[i][0]);
-	GT_pow (&Z[i][1], &e_parallel_safe[i], &t[i][1]);
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  GT_pow (&Z[i][j], &e_parallel_safe[i], &t[i][j]);
 #else
-	GT_pow (&Z[i][0], &e, &t[i][0]);
-	GT_pow (&Z[i][1], &e, &t[i][1]);
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  GT_pow (&Z[i][j], &e, &t[i][j]);
 #endif
-// now we hash  the Z[i][0], Z[i][1] and XOR them with the sk[i][0] ,sk[i][1] to compute the y[i][0],y[i][1]
 
 #if PARALLELISM == 1
-	HashGTToBytes (buf_for_hashing_parallel_safe[i], &Z[i][0]);	// buf_for_hashing holds SHA256(Z[i][0])
-	XOR (P->pi.C[i][0].y, &sk[i][0], buf_for_hashing_parallel_safe[i]);	// y[i]= sk[i][0] XOR SHA256(Z[i][0])
-	HashGTToBytes (buf_for_hashing_parallel_safe[i], &Z[i][1]);
-	XOR (P->pi.C[i][1].y, &sk[i][1], buf_for_hashing_parallel_safe[i]);
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  {
+	    HashGTToBytes (buf_for_hashing_parallel_safe[i], &Z[i][j]);
+	    XOR (P->pi.C[i][j].y, &sk[i][j],
+		 buf_for_hashing_parallel_safe[i]);
+	  }
 #else
-	HashGTToBytes (buf_for_hashing, &Z[i][0]);	// buf_for_hashing holds SHA256(Z[i][0])
-//P->pi.C[i][0].y=(unsigned char *)malloc(SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO);
-//P->pi.C[i][1].y=(unsigned char *)malloc(SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO);
-	XOR (P->pi.C[i][0].y, &sk[i][0], buf_for_hashing);	// y[i]= sk[i][0] XOR SHA256(Z[i][0])
-	HashGTToBytes (buf_for_hashing, &Z[i][1]);
-	XOR (P->pi.C[i][1].y, &sk[i][1], buf_for_hashing);
+	for (j = 0; j < NUM_COLUMNS; j++)
+	  {
+	    HashGTToBytes (buf_for_hashing, &Z[i][j]);
+	    XOR (P->pi.C[i][j].y, &sk[i][j], buf_for_hashing);
+	  }
 #endif
       }
 #if PARALLELISM == 1
@@ -250,6 +286,5 @@ Prover (TLCSParty * P, uint64_t round)
 #if PARALLELISM == 1
   }
 #endif
-
   return 0;
 }
