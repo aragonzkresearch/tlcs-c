@@ -19,5 +19,7 @@ make all
 echo "Installation terminated."
 echo "Now execute the following commands:"
 echo "cp ./lib/libtlcs.so /usr/lib"
+echo "cp ./lib/libtlcs_rsa.so /usr/lib"
 echo "cp ./lib/tlcs_bls_g1.so /usr/lib"
+echo "cp ./lib/tlcs_ss.so /usr/lib"
 echo "sudo ldconfig"
