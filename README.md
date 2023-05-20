@@ -22,6 +22,7 @@ The APIs can be divided in routines for:
 * aggregation of the participants' public keys in `src/aggregate.c` 
 
 ##  News
+* 20-May-2023 Added experimental support for the secret sharing variant.
 * 16-May-2023 Added experimental support for babyjubjub ec.
 * 14-May-2023 Added support for RSA.
 * 07-May-2023 Launch!
