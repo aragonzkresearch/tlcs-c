@@ -35,7 +35,8 @@ Invert (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
 #if _DEBUG_ == 1
 	  Log2 ("Invert: error1 in repetition", i);
 #endif
-//	  return 1;
+//        return 1;
+	  continue;
 	}
 
       for (b = 0; b < NUM_COLUMNS; b++)
@@ -57,7 +58,8 @@ Invert (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
 #if _DEBUG_ == 1
 	  Log2 ("Invert: error2 in repetition", i);
 #endif
-//	  return 1;
+//        return 1;
+	  continue;
 	}
       else
 	{

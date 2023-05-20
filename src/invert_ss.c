@@ -65,7 +65,8 @@ Invert_SS (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
 #if _DEBUG_ == 1
 		Log2 ("Invert_SS: error1 in repetition", i);
 #endif
-	//	return 1;
+		//      return 1;
+		continue;
 	      }
 
 
@@ -86,7 +87,8 @@ Invert_SS (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
 #if _DEBUG_ == 1
 		Log2 ("Invert_SS: error2 in repetition", i);
 #endif
-	//	return 1;
+		//      return 1;
+		continue;
 	      }
 	    else
 	      {
