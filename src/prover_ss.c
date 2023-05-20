@@ -10,7 +10,7 @@
 #include "tlcs.h"
 #include "pairing.h"
 #include "simulated_loe.h"
-#define get_bit(a,n) ( (a[n/8] & (((unsigned char)1U) << (n%8))) !=0  )
+#define get_index(a,n) ( (a[n/8] & (((unsigned char)1U) << (n%8))) %NUM_COLUMNS  )
 static SHA256_CTX ctx;
 void
 ComputeChallenge (bool Challenge[], CycGrpG * PK,
@@ -28,7 +28,7 @@ ComputeChallenge (bool Challenge[], CycGrpG * PK,
   SHA256_Update (&ctx, (unsigned char *) round, sizeof (uint64_t));
   SHA256_Final (buf_for_hashing, &ctx);
   for (i = 0; i < NUM_REPETITIONS; i++)
-    Challenge[i] = get_bit (buf_for_hashing, i);
+    Challenge[i] = get_index (buf_for_hashing, i);
 
 }
 
