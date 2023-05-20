@@ -50,7 +50,7 @@ So, in our example after the execution of the last command, the fil ``verificati
 ```
 The previous commands simulates the aggregation phase of the protocol. The aggregator reads the file `proof` that in our example contains the output of two parties and uses the list `1 1` to know which party computed valid proof (in our example both parties computed valid proofs so the list is `1 1`) and outputs the aggregated public key in the file `aggregated_pk`.
 
-At time `T`, LOE publishes a signature for the time `T` (the link where to get this signature was printed out after executing `demo_prover`).
+At time corresponding to round number `T`, LOE publishes a signature for the round `T` (the link where to get this signature was printed out after executing `demo_prover`).
 ```bash
 ./bin/demo_invert proof aggregated_pk 1 1
 ```
