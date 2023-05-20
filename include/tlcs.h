@@ -12,10 +12,10 @@
 #include "cyclic_group.h"
 #if _SECRET_SHARING_ == 1
 //we implement and 2 out of 4 secret sharing
-#define NUM_REPETITIONS 45
+#define NUM_REPETITIONS 40
 #define NUM_COLUMNS 4
 #else
-#define NUM_REPETITIONS 90
+#define NUM_REPETITIONS 80
 #define NUM_COLUMNS 2
 #endif
 #define bool int
