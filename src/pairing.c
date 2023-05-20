@@ -37,14 +37,8 @@ pairing_init (void)
 void
 GT_copy (GT * a, GT * b)
 {
-#if PARALLELISM == 1
-  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
-  GT_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, b);
-  GT_deserialize (a, buf_parallel_safe, MAX_LENGTH_SERIALIZATION);
-#else
   GT_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, b);
   GT_deserialize (a, buf_for_serializing, MAX_LENGTH_SERIALIZATION);
-#endif
 }
 
 char *
@@ -52,7 +46,6 @@ G1_toHexString (const G1 * g)
 {
   char buf[MAX_LENGTH_SERIALIZATION];
   char *s;
-//int len=G2_serialize(buf,MAX_LENGTH_SERIALIZATION,g);
   mclBn_setETHserialization (1);
   int len = mclBnG1_getStr (buf, MAX_LENGTH_SERIALIZATION, g, 16);
   if (len == 0)
@@ -72,7 +65,6 @@ G2_toHexString (const G2 * g)
 {
   char buf[MAX_LENGTH_SERIALIZATION];
   char *s;
-//int len=G2_serialize(buf,MAX_LENGTH_SERIALIZATION,g);
   mclBn_setETHserialization (1);
   int len = mclBnG2_getStr (buf, MAX_LENGTH_SERIALIZATION, g,
 			    MCLBN_IO_SERIALIZE_HEX_STR);
@@ -82,7 +74,6 @@ G2_toHexString (const G2 * g)
       return NULL;
     }
   s = (char *) malloc (len + 1);
-  //strncpy (s, buf, len);
   memcpy (s, buf, len);
   s[len] = '\0';
   mclBn_setETHserialization (0);
@@ -93,10 +84,8 @@ int
 G2_fromHexString (G2 * g, const char *s)
 {
   int ret;
-//G2_deserialize(g,s,strlen(s));
   mclBn_setETHserialization (1);
   ret = mclBnG2_setStr (g, s, strlen (s), MCLBN_IO_SERIALIZE_HEX_STR);
-  //mclBnG2_deserialize (g, s,MAX_LENGTH_SERIALIZATION);
   mclBn_setETHserialization (0);
   return ret;
 }
@@ -106,7 +95,6 @@ Zp_toHexString (const Zp * x)
 {
   char buf[MAX_LENGTH_SERIALIZATION];
   char *s;
-//int len=Zp_serialize((unsigned char *)buf,MAX_LENGTH_SERIALIZATION,x);
   int len = mclBnFr_getStr (buf, MAX_LENGTH_SERIALIZATION, x, 16);
   if (len == 0)
     return NULL;
@@ -120,14 +108,12 @@ int
 Zp_fromHexString (Zp * x, const char *s)
 {
 
-//Zp_deserialize(x,s,strlen(s));
   return mclBnFr_setStr (x, s, strlen (s), 16);
 }
 
 size_t
 GT_toHexString (char *buf, const GT * e)	// copy the string in hex and returns the length in *size (the length include the null terminating character)
 {
-//int len=G2_serialize(buf,MAX_LENGTH_SERIALIZATION,g);
   mclBn_setETHserialization (1);
   size_t len = mclBnGT_getStr (buf, MAX_LENGTH_SERIALIZATION, e,
 			       MCLBN_IO_SERIALIZE_HEX_STR);
@@ -136,7 +122,6 @@ GT_toHexString (char *buf, const GT * e)	// copy the string in hex and returns t
       mclBn_setETHserialization (0);
       return 0;
     }
-  //strncpy (s, buf, len);
   buf[len] = '\0';
   mclBn_setETHserialization (0);
   return len + 1;

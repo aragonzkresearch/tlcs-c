@@ -29,6 +29,10 @@ group_init (void)
 
       return 1;
     }
+#if _SECRET_SHARING_ == 1
+  InitTmpVar ();
+  ComputeLagrangeCoeff ();
+#endif
 
   return 0;
 }
@@ -81,15 +85,6 @@ group_init (const char *modulus, const char *pk)
 	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
       exit (1);
     }
-#if PARALLELISM == 1
-  {
-    int i;
-    for (i = 0; i < NUM_REPETITIONS; i++)
-      buf_for_hashing_parallel_safe[i] =
-	(unsigned char *) malloc (SHA256_DIGEST_LENGTH *
-				  SERIALIZATION_CYCGRPZP_RATIO);
-  }
-#endif
   return 0;
 }
 #else
@@ -100,7 +95,16 @@ group_init (int curve_type)
 {
   Log_init ();
   if (curve_type == 0)
-    ec_group = babyjubjub_init ();
+    {
+#if _SECRET_SHARING_ == 1
+      printf
+	("babyjubjub support not available in the secret sharing variant. Aborting\n");
+      Log
+	("babyjubjub support not available in the secret sharing variant. Aborting\n");
+      exit (1);
+#endif
+      ec_group = babyjubjub_init ();
+    }
   else
     ec_group = EC_GROUP_new_by_curve_name (curve_type);
   if (ec_group == NULL)
@@ -129,14 +133,9 @@ group_init (int curve_type)
 	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
       exit (1);
     }
-#if PARALLELISM == 1
-  {
-    int i;
-    for (i = 0; i < NUM_REPETITIONS; i++)
-      buf_for_hashing_parallel_safe[i] =
-	(unsigned char *) malloc (SHA256_DIGEST_LENGTH *
-				  SERIALIZATION_CYCGRPZP_RATIO);
-  }
+#if _SECRET_SHARING_ == 1
+  InitTmpVar ();
+  ComputeLagrangeCoeff ();
 #endif
   return 0;
 }
@@ -161,28 +160,16 @@ generate_secret_key (CycGrpZp * sk)
 void
 CycGrpZp_copy (CycGrpZp * a, const CycGrpZp * b)
 {
-#if PARALLELISM == 1
-  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
-  CycGrpZp_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), b);
-  CycGrpZp_deserialize (a, buf_parallel_safe, sizeof (buf_parallel_safe));
-#else
   CycGrpZp_serialize (buf_for_serializing, sizeof (buf_for_serializing), b);
   CycGrpZp_deserialize (a, buf_for_serializing, sizeof (buf_for_serializing));
-#endif
 }
 
 void
 CycGrpG_copy (CycGrpG * a, const CycGrpG * b)
 {
 
-#if PARALLELISM == 1
-  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
-  CycGrpG_serialize (buf_parallel_safe, sizeof (buf_parallel_safe), b);
-  CycGrpG_deserialize (a, buf_parallel_safe, sizeof (buf_parallel_safe));
-#else
   CycGrpG_serialize (buf_for_serializing, sizeof (buf_for_serializing), b);
   CycGrpG_deserialize (a, buf_for_serializing, sizeof (buf_for_serializing));
-#endif
 }
 
 char *

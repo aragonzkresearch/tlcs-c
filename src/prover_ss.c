@@ -10,9 +10,6 @@
 #include "tlcs.h"
 #include "pairing.h"
 #include "simulated_loe.h"
-#if PARALLELISM == 1
-#include <omp.h>
-#endif
 #define get_bit(a,n) ( (a[n/8] & (((unsigned char)1U) << (n%8))) !=0  )
 static SHA256_CTX ctx;
 void
@@ -24,11 +21,6 @@ ComputeChallenge (bool Challenge[], CycGrpG * PK,
   char *s;
 // We compute Challenge=SHA256(P->PK,P->pi,CommitmentTuple,round);
   SHA256_Init (&ctx);
-/*
-SHA256_Update(&ctx, (unsigned char*)PK, sizeof(CycGrpG));
-SHA256_Update(&ctx, (unsigned char *)C, sizeof(CommitmentTuple)*NUM_REPETITIONS*NUM_COLUMNS);
-SHA256_Update(&ctx, (unsigned char *)round, sizeof(uint64_t));
-*/
   s = SerializePKandCommitment (PK, C);
   len = strlen (s);
 
@@ -44,52 +36,17 @@ inline void
 XOR (unsigned char y[], CycGrpZp * sk, unsigned char sha256_digest[])	// sha256_digest is not 32 bytes but 32*SERIALIZATION_CYCGRPZP_RATIO
 {
   int i;
-#if PARALLELISM == 1
-  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
-//int length=CycGrpZp_serialize(buf_parallel_safe,sizeof(buf_parallel_safe),sk); 
-//ASSERT(length);
-  memset ((void *) buf_parallel_safe, 0,
-	  SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO);
-  CycGrpZp_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, sk);
-  for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
-    y[i] = (unsigned char) (buf_parallel_safe[i] ^ sha256_digest[i]);
-#else
-//int length=CycGrpZp_serialize(buf_for_serializing,sizeof(buf_for_serializing),sk); 
-//ASSERT(length);
   memset ((void *) buf_for_serializing, 0,
 	  SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO);
   CycGrpZp_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, sk);
   for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
     y[i] = (unsigned char) (buf_for_serializing[i] ^ sha256_digest[i]);
-#endif
 }
 
 inline int
 HashGTToBytes (unsigned char *buf, GT * e)
 {
   size_t length;
-#if PARALLELISM == 1
-  unsigned char buf_parallel_safe[MAX_LENGTH_SERIALIZATION];
-//  int length = GT_serialize (buf_parallel_safe, MAX_LENGTH_SERIALIZATION, e); // with BLS12-381 pairing length should 576 bytes
-  length = GT_toHexString ((char *) buf_parallel_safe, e);
-  ASSERT (length);
-  if (!length)
-    return 1;
-#if CYC_GRP_BLS_G1 == 1
-  SHA256 (buf_parallel_safe, length, buf);
-#else
-  {
-    int k;
-    for (k = 0; k < SERIALIZATION_CYCGRPZP_RATIO; k++)
-      {
-	buf_parallel_safe[length] = k;
-	SHA256 (buf_parallel_safe, length, buf + k * SHA256_DIGEST_LENGTH);
-      }
-  }
-#endif
-
-#else
-  //int length = GT_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, e);       // with BLS12-381 pairing length should 576 bytes
   length = GT_toHexString ((char *) buf_for_serializing, e);
 //printf("GT: %d %s\n",length,buf_for_serializing);
   ASSERT (length);
@@ -108,7 +65,6 @@ HashGTToBytes (unsigned char *buf, GT * e)
   }
 #endif
 
-#endif
   return 0;
 
 }
@@ -126,8 +82,6 @@ HashRoundToG1 (G1 * g1, uint64_t * round)
   SHA256_Update (&ctx, (unsigned char *) &round_big_endian, 8);
   SHA256_Final (buf_for_hashing, &ctx);
   mclBnG1_hashAndMapTo (g1, (void *) buf_for_hashing, 32);
-//round_to_bytes(&tmp_bytes[0],round);
-//G1_hashAndMapTo(g1,&tmp_bytes[0],sizeof(uint64_t));
 }
 
 static inline void
@@ -152,9 +106,7 @@ ComputeShares (CycGrpZp shares[], CycGrpZp * s)
 #else
       CycGrpZp_new (&shares[i - 1]);
 #endif
-//snprintf(iStr,8,"%x",i);
       CycGrpZp_deserialize (&tmp2, (unsigned char *) iStr, 8);
-//printf("tmp2:%s\n",CycGrpZp_toHexString(&tmp2));
       CycGrpZp_mul (&tmp, &A, &tmp2);
       CycGrpZp_add (&shares[i - 1], &tmp, s);
 
@@ -187,104 +139,53 @@ Prover_SS (TLCSParty * P, uint64_t round)
   GT e;
   bool Challenge[NUM_REPETITIONS];
 
-#if PARALLELISM == 1
-  CycGrpZp sk_parallel_safe[NUM_REPETITIONS];
-  GT e_parallel_safe[NUM_REPETITIONS];
-#endif
   generate_secret_key (&P->sk);
   generate_public_key (&P->PK, &P->sk);
-#if PARALLELISM == 1
-
+  int j;
   for (i = 0; i < NUM_REPETITIONS; i++)
-    CycGrpZp_copy (&sk_parallel_safe[i], &P->sk);
-#pragma omp parallel
-  {
-#pragma omp for
-#endif
-    int j;
-    for (i = 0; i < NUM_REPETITIONS; i++)
-      {
+    {
 #if CYC_GRP_BLS_G1 == 1
 #else
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  CycGrpZp_new (&sk[i][j]);
+      for (j = 0; j < NUM_COLUMNS; j++)
+	CycGrpZp_new (&sk[i][j]);
 #endif
-#if PARALLELISM == 1
-	ComputeShares (sk[i], &sk_parallel_safe[i]);
-#else
-	ComputeShares (sk[i], &P->sk);
-#endif
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  Zp_setRand (&t[i][j]);
+      ComputeShares (sk[i], &P->sk);
+      for (j = 0; j < NUM_COLUMNS; j++)
+	Zp_setRand (&t[i][j]);
 #if CYC_GRP_BLS_G1 == 1
 
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  CycGrpG_mul (&P->pi.C[i][j].PK, &CycGrpGenerator, &sk[i][j]);
+      for (j = 0; j < NUM_COLUMNS; j++)
+	CycGrpG_mul (&P->pi.C[i][j].PK, &CycGrpGenerator, &sk[i][j]);
 #else
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  {
-	    CycGrpG_new (&P->pi.C[i][j].PK);
-	    CycGrpG_mul (&P->pi.C[i][j].PK, CycGrpGenerator, &sk[i][j]);
-	  }
+      for (j = 0; j < NUM_COLUMNS; j++)
+	{
+	  CycGrpG_new (&P->pi.C[i][j].PK);
+	  CycGrpG_mul (&P->pi.C[i][j].PK, CycGrpGenerator, &sk[i][j]);
+	}
 #endif
 
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  G2_mul (&P->pi.C[i][j].T, &G2Generator, &t[i][j]);
-      }
-#if PARALLELISM == 1
-  }
-#endif
+      for (j = 0; j < NUM_COLUMNS; j++)
+	G2_mul (&P->pi.C[i][j].T, &G2Generator, &t[i][j]);
+    }
   HashRoundToG1 (&HashedRound, &round);	// HashedRound=MAP_TO_POINT(SHA256(BIG_ENDIAN(round)))
   pairing (&e, &HashedRound, &PK_LOE);	// compute e=e(HashedRound,PK_LOE)
 
-#if PARALLELISM == 1
   for (i = 0; i < NUM_REPETITIONS; i++)
-    GT_copy (&e_parallel_safe[i], &e);
-#pragma omp parallel
-  {
-#pragma omp for
-#endif
-    for (i = 0; i < NUM_REPETITIONS; i++)
-      {
-#if PARALLELISM == 1
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  GT_pow (&Z[i][j], &e_parallel_safe[i], &t[i][j]);
-#else
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  GT_pow (&Z[i][j], &e, &t[i][j]);
-#endif
+    {
+      for (j = 0; j < NUM_COLUMNS; j++)
+	GT_pow (&Z[i][j], &e, &t[i][j]);
 
-#if PARALLELISM == 1
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  {
-	    HashGTToBytes (buf_for_hashing_parallel_safe[i], &Z[i][j]);
-	    XOR (P->pi.C[i][j].y, &sk[i][j],
-		 buf_for_hashing_parallel_safe[i]);
-	  }
-#else
-	for (j = 0; j < NUM_COLUMNS; j++)
-	  {
-	    HashGTToBytes (buf_for_hashing, &Z[i][j]);
-	    XOR (P->pi.C[i][j].y, &sk[i][j], buf_for_hashing);
-	  }
-#endif
-      }
-#if PARALLELISM == 1
-  }
-#endif
+      for (j = 0; j < NUM_COLUMNS; j++)
+	{
+	  HashGTToBytes (buf_for_hashing, &Z[i][j]);
+	  XOR (P->pi.C[i][j].y, &sk[i][j], buf_for_hashing);
+	}
+    }
   ComputeChallenge (Challenge, &P->PK, P->pi.C, &round);
-#if PARALLELISM == 1
-#pragma omp parallel
-  {
-#pragma omp for
-#endif
-    for (i = 0; i < NUM_REPETITIONS; i++)
-      {
+  for (i = 0; i < NUM_REPETITIONS; i++)
+    {
 
-	Zp_copy (&P->pi.O[i].t, &t[i][Challenge[i]]);
-      }
-#if PARALLELISM == 1
-  }
-#endif
+      Zp_copy (&P->pi.O[i].t, &t[i][Challenge[i]]);
+    }
   return 0;
 }

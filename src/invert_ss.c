@@ -22,7 +22,7 @@ InitTmpVar2 (void)
 
 }
 
-inline void
+void
 AddScalarsWithLagrangeCoeff (CycGrpZp * h, const CycGrpZp * u,
 			     const CycGrpZp * v, int k1, int k2)
 {				// h=u*Lambda_0+v*Lambda_1 where Lambda_0=Lambda_{(k1,k2),k1} and similarly Lambda_1
