@@ -68,13 +68,26 @@ ComputeLagrangeCoeff (void)
 
 }
 
-void
+inline void
 AddWithLagrangeCoeff (CycGrpG * h, const CycGrpG * u, const CycGrpG * v,
 		      int k1, int k2)
-{				// h=u^Lambda_0*v^Lambda_1 where Lambda_0=Lambda_{(k1,k2),k1} and similarly Lambda_1
+{
+				// h=u^Lambda_0*v^Lambda_1 where Lambda_0=Lambda_{(k1,k2),k1} and similarly Lambda_1
+#if CYCGRP_BLS_G1 == 1
   CycGrpG_mul (&GTmp1, u, &LagrangeCoefficients[k1 - 1][k2 - 1][0]);
   CycGrpG_mul (&GTmp2, v, &LagrangeCoefficients[k1 - 1][k2 - 1][1]);
   CycGrpG_add (h, &GTmp1, &GTmp2);
+#else
+{
+BIGNUM *m[2];
+EC_POINT *p[2];
+m[0]=LagrangeCoefficients[k1-1][k2-1][0].B;
+m[1]=LagrangeCoefficients[k1-1][k2-1][1].B;
+p[0]=u->P;
+p[1]=v->P;
+EC_POINTs_mul(ec_group,h->P,NULL,2,(const EC_POINT **)p, (const BIGNUM **)m,bn_ctx);
+#endif
+}
 }
 
 int

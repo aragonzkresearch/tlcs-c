@@ -106,6 +106,7 @@ ComputeShares (CycGrpZp shares[], CycGrpZp * s)
 #else
       CycGrpZp_new (&shares[i - 1]);
 #endif
+      snprintf(iStr,8,"%x",i);	
       CycGrpZp_deserialize (&tmp2, (unsigned char *) iStr, 8);
       CycGrpZp_mul (&tmp, &A, &tmp2);
       CycGrpZp_add (&shares[i - 1], &tmp, s);

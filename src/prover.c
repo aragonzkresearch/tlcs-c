@@ -39,7 +39,9 @@ XOR (unsigned char y[], CycGrpZp * sk, unsigned char sha256_digest[])	// sha256_
   int i;
   memset ((void *) buf_for_serializing, 0,
 	  SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO);
-  CycGrpZp_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, sk);
+  CycGrpZp_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, sk); // note: sk is serialized as hex string terminated by the null '\0' character so that
+// when it is deserialized the BN_hex2bn routine knows the length. This diverges from the way we treat bls12_381 and is the reason why we need SERIALIZATION_CYCGRPZP_RATIO to be 3 also for
+// groups of order 256 bits: 2 for the expansion from binary to hex and one byte more (padded with all zeroes) for the null character
   for (i = 0; i < SHA256_DIGEST_LENGTH * SERIALIZATION_CYCGRPZP_RATIO; i++)
     y[i] = (unsigned char) (buf_for_serializing[i] ^ sha256_digest[i]);
 }
@@ -48,8 +50,7 @@ inline int
 HashGTToBytes (unsigned char *buf, GT * e)
 {
   size_t length;
-  //int length = GT_serialize (buf_for_serializing, MAX_LENGTH_SERIALIZATION, e);       // with BLS12-381 pairing length should 576 bytes
-  length = GT_toHexString ((char *) buf_for_serializing, e);
+  length = GT_toHexString ((char *) buf_for_serializing, e); // note: e is serialized as hex string terminated by the null '\0' character
 //printf("GT: %d %s\n",length,buf_for_serializing);
   ASSERT (length);
   if (!length)
@@ -61,7 +62,7 @@ HashGTToBytes (unsigned char *buf, GT * e)
     int k;
     for (k = 0; k < SERIALIZATION_CYCGRPZP_RATIO; k++)
       {				// we hash the element e so that it has SHA256_DIGEST_LENGTH*SERIALIZATION_CYCGRPZP_RATIO bytes. This is to be able to XOR with the maximum number of bytes that an element of CycGrpZp can contain. 
-	buf_for_serializing[length] = k;
+	buf_for_serializing[length] = k; // buf_for_serializing stores e in serialized hex format. We set last byte to integer k and we hash it. 
 	SHA256 (buf_for_serializing, length, buf + k * SHA256_DIGEST_LENGTH);
       }
   }

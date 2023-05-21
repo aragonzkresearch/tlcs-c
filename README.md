@@ -54,8 +54,8 @@ At time corresponding to round number `T`, LOE publishes a signature for the rou
 ```bash
 ./bin/demo_invert proof aggregated_pk 1 1
 ```
-The previous command simulates the inversion phase in which after time `T` we aim at inverting the aggregated public key contained in the file `aggregated_pk`. To this purpose we pass as input to the latter program the file `proof` that contains the public keys of all parties who participated in the protocol and their respective proofs, the aggregate public key file `aggregated_pk` and, in our example, the list of 0/1 values `1 1` to indicate that the file `proof` contains two proofs that are both accepted.
-The program will ask for you for the signature of LOE of time `T` and should print out the secret key corresponding to the aggregated public key in the file `aggregated_pk`.
+The previous command simulates the inversion phase in which after time corresponding to round `T` we aim at inverting the aggregated public key contained in the file `aggregated_pk`. To this purpose we pass as input to the latter program the file `proof` that contains the public keys of all parties who participated in the protocol and their respective proofs, the aggregate public key file `aggregated_pk` and, in our example, the list of 0/1 values `1 1` to indicate that the file `proof` contains two proofs that are both accepted.
+The program will ask for you for the signature of LOE of round `T` and should print out the secret key corresponding to the aggregated public key in the file `aggregated_pk`.
 
 ## Contacts
 

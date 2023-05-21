@@ -75,14 +75,14 @@ group_init (const char *modulus, const char *pk)
     }
 
   Order_bits = BN_num_bits (RSA_pk);
-  if (SERIALIZATION_CYCGRPZP_RATIO < ((Order_bits - 1) / 256 + 1) * 3)
+  if (SERIALIZATION_CYCGRPZP_RATIO < ((Order_bits - 1) / 256 + 1) * 2+1)
     {
       printf
 	("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile\n",
-	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
+	 ((Order_bits - 1) / 256 + 1) * 2+1);
       Log2
 	("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile",
-	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
+	 ((Order_bits - 1) / 256 + 1) * 2+1);
       exit (1);
     }
   return 0;
@@ -123,14 +123,14 @@ group_init (int curve_type)
   if (!EC_GROUP_get_order (ec_group, Order.B, NULL))
     return 1;
   Order_bits = BN_num_bits (Order.B);
-  if (SERIALIZATION_CYCGRPZP_RATIO < ((Order_bits - 1) / 256 + 1) * 3)
+  if (SERIALIZATION_CYCGRPZP_RATIO < ((Order_bits - 1) / 256 + 1) * 2+1)
     {
       printf
 	("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile\n",
-	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
+	 ((Order_bits - 1) / 256 + 1) * 2+1);
       Log2
 	("Panic: this curve requires that you changed the definition of the string SERIALIZATION_CYCGRPZP_RATIO in the file include/global_bufs.h to %d and recompile",
-	 ((Order_bits - 1) / 256 + 1) * 2 + 1);
+	 ((Order_bits - 1) / 256 + 1) * 2+1);
       exit (1);
     }
 #if _SECRET_SHARING_ == 1

@@ -70,12 +70,12 @@ Invert_SS (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
 	      }
 
 
-	    pairing (&Z, Signature, &pi->C[i][k1].T);
+	    pairing (&Z, Signature, &pi->C[i][k1-1].T);
 	    HashGTToBytes (buf_for_hashing, &Z);
-	    XOR_Verifier (&s[0], pi->C[i][k1].y, buf_for_hashing);
-	    pairing (&Z, Signature, &pi->C[i][k2].T);
+	    XOR_Verifier (&s[0], pi->C[i][k1-1].y, buf_for_hashing);
+	    pairing (&Z, Signature, &pi->C[i][k2-1].T);
 	    HashGTToBytes (buf_for_hashing, &Z);
-	    XOR_Verifier (&s[1], pi->C[i][k2].y, buf_for_hashing);
+	    XOR_Verifier (&s[1], pi->C[i][k2-1].y, buf_for_hashing);
 	    AddScalarsWithLagrangeCoeff (&sktmp, &s[0], &s[1], k1, k2);
 #if CYC_GRP_BLS_G1 == 1
 	    CycGrpG_mul (&GTmp, &CycGrpGenerator, &sktmp);
@@ -83,7 +83,8 @@ Invert_SS (CycGrpZp * sk, CycGrpG * PK, G1 * Signature, Proof * pi)
 	    CycGrpG_mul (&GTmp, CycGrpGenerator, &sktmp);
 #endif
 	    if (!CycGrpG_isEqual (&GTmp, PK))
-	      {			// check that g^s =PK[i]
+	      {			
+
 #if _DEBUG_ == 1
 		Log2 ("Invert_SS: error2 in repetition", i);
 #endif
