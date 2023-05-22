@@ -21,6 +21,7 @@ The APIs can be divided in routines for:
 * for inversion of the public key in `src/invert.c`
 * aggregation of the participants' public keys in `src/aggregate.c` 
 
+The prover, verifier and inversion have corresponding versions for the secret sharing variant.
 ##  News
 * 20-May-2023 Added experimental support for the secret sharing variant.
 * 16-May-2023 Added experimental support for babyjubjub ec.
