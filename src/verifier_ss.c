@@ -54,8 +54,10 @@ ComputeLagrangeCoeff (void)
 #endif
 // Lambda_{(k1,k2),0}=k2/(k2-k1) mod p
 // Lambda_{(k1,k2),1}=k1/(k1-k2) mod p
-	snprintf (k1Str, 8, "%x", k1);
-	snprintf (k2Str, 8, "%x", k2);
+	//snprintf (k1Str, 8, "%x", k1);
+	snprintf (k1Str, 8, "%x", k1 + 1);
+	//snprintf (k2Str, 8, "%x", k2);
+	snprintf (k2Str, 8, "%x", k2 + 1);
 	CycGrpZp_deserialize (&Tmp1, (unsigned char *) k1Str, 8);
 	CycGrpZp_deserialize (&Tmp2, (unsigned char *) k2Str, 8);
 	CycGrpZp_sub (&Tmp3, &Tmp2, &Tmp1);
@@ -79,6 +81,8 @@ AddWithLagrangeCoeff (CycGrpG * h, const CycGrpG * u, const CycGrpG * v,
   CycGrpG_add (h, &GTmp1, &GTmp2);
 #else
   {
+#if NUM_COLUMNS == 3
+/*
 // Recall: in case NUM_COLUMNS == 3 then:
 //  Lambda_{(k1,k2),0}=k2/(k2-k1) mod p
 // Lambda_{(k1,k2),1}=k1/(k1-k2) mod p
@@ -86,8 +90,9 @@ AddWithLagrangeCoeff (CycGrpG * h, const CycGrpG * u, const CycGrpG * v,
 // so Lambda_{(1,2),1)=-1
 // so Lambda_{(2,3),0)=3
 // so Lambda_{(2,3),1)=-2
+// so Lambda_{(1,3),0)=3/2
+// so Lambda_{(1,3),1)=-1/2
 // so we treat these special cases separately for efficiency
-#if NUM_COLUMNS == 3
     if (k1 == 1 && k2 == 2)
       {
 	EC_POINT *tmp, *tmp2;
@@ -109,6 +114,64 @@ AddWithLagrangeCoeff (CycGrpG * h, const CycGrpG * u, const CycGrpG * v,
 	EC_POINT_copy (tmp2, v->P);
 	EC_POINT_invert (ec_group, tmp2, bn_ctx);
 	EC_POINT_dbl (ec_group, tmp2, tmp2, bn_ctx);
+	EC_POINT_add (ec_group, h->P, tmp, tmp2, bn_ctx);
+	return;
+      }
+#endif
+    BIGNUM *m[2];
+    EC_POINT *p[2];
+    m[0] = LagrangeCoefficients[k1 - 1][k2 - 1][0].B;
+    m[1] = LagrangeCoefficients[k1 - 1][k2 - 1][1].B;
+    p[0] = u->P;
+    p[1] = v->P;
+    EC_POINTs_mul (ec_group, h->P, NULL, 2, (const EC_POINT **) p,
+		   (const BIGNUM **) m, bn_ctx);
+  }
+*/
+// Recall: in case NUM_COLUMNS == 3 then:
+//  Lambda_{(k1,k2),0}=k2/(k2-k1) mod p
+// Lambda_{(k1,k2),1}=k1/(k1-k2) mod p
+// Moreover we evaluate at points 2,3,4
+// so Lambda_{(2,3),0)=3
+// so Lambda_{(2,3),1)=-2
+// so Lambda_{(3,4),0)=4
+// so Lambda_{(3,4),1)=-3
+// so Lambda_{(2,4),0)=2
+// so Lambda_{(2,4),1)=-1
+// so we treat these special cases separately for efficiency
+    if (k1 == 1 && k2 == 2)
+      {
+	EC_POINT *tmp, *tmp2;
+	tmp = EC_POINT_new (ec_group);
+	tmp2 = EC_POINT_new (ec_group);
+	EC_POINT_dbl (ec_group, tmp, u->P, bn_ctx);
+	EC_POINT_add (ec_group, tmp, tmp, u->P, bn_ctx);
+	EC_POINT_dbl (ec_group, tmp2, v->P, bn_ctx);
+	EC_POINT_invert (ec_group, tmp2, bn_ctx);
+	EC_POINT_add (ec_group, h->P, tmp, tmp2, bn_ctx);
+	return;
+      }
+    else if (k1 == 2 && k2 == 3)
+      {
+	EC_POINT *tmp, *tmp2;
+	tmp = EC_POINT_new (ec_group);
+	tmp2 = EC_POINT_new (ec_group);
+	EC_POINT_dbl (ec_group, tmp, u->P, bn_ctx);
+	EC_POINT_dbl (ec_group, tmp, tmp, bn_ctx);
+	EC_POINT_dbl (ec_group, tmp2, v->P, bn_ctx);
+	EC_POINT_add (ec_group, tmp2, tmp2, v->P, bn_ctx);
+	EC_POINT_invert (ec_group, tmp2, bn_ctx);
+	EC_POINT_add (ec_group, h->P, tmp, tmp2, bn_ctx);
+	return;
+      }
+    else if (k1 == 3 && k2 == 3)
+      {
+	EC_POINT *tmp, *tmp2;
+	tmp = EC_POINT_new (ec_group);
+	tmp2 = EC_POINT_new (ec_group);
+	EC_POINT_dbl (ec_group, tmp, u->P, bn_ctx);
+	EC_POINT_copy (tmp2, v->P);
+	EC_POINT_invert (ec_group, tmp2, bn_ctx);
 	EC_POINT_add (ec_group, h->P, tmp, tmp2, bn_ctx);
 	return;
       }

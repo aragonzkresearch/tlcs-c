@@ -19,7 +19,6 @@ ComputeChallenge (bool Challenge[], CycGrpG * PK,
   int i;
   size_t len;
   char *s;
-// We compute Challenge=SHA256(P->PK,P->pi,CommitmentTuple,round);
   SHA256_Init (&ctx);
   s = SerializePKandCommitment (PK, C);
   len = strlen (s);
@@ -89,6 +88,7 @@ ComputeShares (CycGrpZp shares[], CycGrpZp * s)
 {				// s is the secret
 // p(x)=Ax+s
 // we evaluate it at points 1,..,NUM_COLUMNS
+// we evaluate it at points 2,3,..,NUM_COLUMNS+1. The reason of the +1 is to have for the 2 out of 3 SS very small Lagrange coefficients.
   char iStr[8];
   CycGrpZp A;
   CycGrpZp tmp, tmp2;
@@ -106,7 +106,8 @@ ComputeShares (CycGrpZp shares[], CycGrpZp * s)
 #else
       CycGrpZp_new (&shares[i - 1]);
 #endif
-      snprintf(iStr,8,"%x",i);	
+      //snprintf(iStr,8,"%x",i);        
+      snprintf (iStr, 8, "%x", i + 1);
       CycGrpZp_deserialize (&tmp2, (unsigned char *) iStr, 8);
       CycGrpZp_mul (&tmp, &A, &tmp2);
       CycGrpZp_add (&shares[i - 1], &tmp, s);
