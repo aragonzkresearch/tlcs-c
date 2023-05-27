@@ -3,7 +3,7 @@
 The repository provides implementation of the efficient TLCS protocol described in this [note](https://hackmd.io/WYp7A-jPQvK8xSB1pyH7hQ) that builds on the LOE (a.k.a. [drand](https://github.com/drand/drand) ) service. The implementation is based on the [mcl](https://github.com/herumi/mcl/) library and openssl.
 
 The TLCS library allows to create public keys for virtually any elliptic curve supported by openssl and in addition the `G1` group of the `BLS12_381` curve and the babyjubjub curve.
-To use the `G1` group set `-D_CYC_GRP_BLS_G1=1`  in the `Makefile` before installation or use the corresponding library. Observe that in this case you cannot use the public keys to encrypt with respect to cryptosystems that are secure under assumptions that do not hold in Type 3 bilinear groups. To use RSA set `-D_CYC_GRP_RSA=1` or use the corresponding library. 
+To use the `G1` group set `-D_CYC_GRP_BLS_G1=1`  in the `Makefile` before installation or use the corresponding library. Observe that in this case you should be sure that cryptosystem is secure in that group. To use RSA set `-D_CYC_GRP_RSA=1` or use the corresponding library. 
 ## Installation
 ```bash
 git clone https://github.com/herumi/mcl.git
