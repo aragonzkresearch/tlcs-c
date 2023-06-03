@@ -128,4 +128,4 @@ demo_invert_ss: examples/demo_invert.c libtlcs_ss
 tests: examples/tests.c cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o global_bufs.o babyjubjub.o
 	$(CC) -o  bin/tests src/cyclic_group.o src/err.o src/pairing.o src/prover.o src/verifier.o src/aggregate.o src/invert.o src/serialize.o src/babyjubjub.o src/tests/simulated_loe.o examples/tests.c src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS0) $(CCOPT)
 clean:
-	rm -f bin/tlcs /bin/tlcs_bls_g1 bin/tests *.o src/*.o examples/*.o /bin/demo* src/*.o lib/*.so
+	rm -f bin/* *.o src/*.o examples/*.o lib/*.so
