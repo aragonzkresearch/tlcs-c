@@ -8,7 +8,7 @@ DFLAGS3=-D_DEBUG_=1 -DCYC_GRP_BLS_G1=0 -DCYC_GRP_RSA=1
 MCL_INCLUDE_PATH=mcl/include
 IOPT=-I $(MCL_INCLUDE_PATH) -I ./include
 LDFLAGS=-lcrypto mcl/lib/libmclbn384_256.a mcl/lib/libmcl.a 
-all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1 tlcs_ss demo_prover_ss demo_verifier_ss demo_aggregator_ss demo_invert_ss
+all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1 tlcs_ss demo_prover_ss demo_verifier_ss demo_aggregator_ss demo_invert_ss prover4blockchain verifier4blockchain
 prover_ss.o: src/prover_ss.c
 	$(CC) -o src/prover_ss.o $(CCOPT) $(IOPT) $(DFLAGS0) -D_SECRET_SHARING_=1 -c src/prover_ss.c
 babyjubjub.o: src/babyjubjub.c
@@ -111,8 +111,12 @@ tlcs_rsa: libtlcs_rsa examples/tlcs.c
 	$(CC) -o  bin/tlcs_rsa examples/tlcs.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs_rsa.so $(DFLAGS3) $(CCOPT)
 demo_prover: examples/demo_prover.c libtlcs
 	$(CC) -o  bin/demo_prover examples/demo_prover.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+prover4blockchain: examples/prover4blockchain.c libtlcs
+	$(CC) -o  bin/prover4blockchain examples/prover4blockchain.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
 demo_verifier: examples/demo_verifier.c libtlcs
 	$(CC) -o  bin/demo_verifier examples/demo_verifier.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+verifier4blockchain: examples/verifier4blockchain.c libtlcs
+	$(CC) -o  bin/verifier4blockchain examples/verifier4blockchain.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
 demo_aggregator: examples/demo_aggregator.c libtlcs
 	$(CC) -o  bin/demo_aggregator examples/demo_aggregator.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
 demo_invert: examples/demo_invert.c libtlcs
