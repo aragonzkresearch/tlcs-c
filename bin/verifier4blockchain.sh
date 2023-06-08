@@ -5,3 +5,6 @@
   cat > tmpproof
   ./bin/verifier4blockchain tmpproof tmpverified < tmp
   cat tmpverified
+  rm -f tmpproof
+  rm -f tmp
+  rm -f tmpverified
