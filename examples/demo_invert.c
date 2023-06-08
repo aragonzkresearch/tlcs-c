@@ -37,7 +37,7 @@ main (int argc, char **argv)
   if (argc <= 2)
     {
       printf
-	("Usage: %s [file1] [file2] [list]\n [file1] will be used to read a list of serialized PK and proofs, [file2] to read the aggregated PK to invert and [list] a list of 0/1 values representing whether the input of the i-th party has to be taken in account or not.\n",
+	("Usage: %s [file1] [file2] [list]\n [file1] will be used to read a list of serialized PKs and proofs, [file2] to read the aggregated PK to invert and [list] a list of 0/1 values representing whether the input of the i-th party has to be taken in account or not.\n",
 	 argv[0]);
       exit (1);
     }

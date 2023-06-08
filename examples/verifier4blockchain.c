@@ -85,16 +85,17 @@ main (int argc, char **argv)
       if (DeserializePartyOutput
 	  (&P[i].PK, &P[i].pi, serialized_proof + tmplen, &size) == -1)
 	{
-	  fprintf (stderr, "Error in deserializing the proof of party %d. Aborting\n",
-		  i);
-fprintf (fp2, "0");
-fflush(stdout);
+	  fprintf (stderr,
+		   "Error in deserializing the proof of party %d. Aborting\n",
+		   i);
+	  fprintf (fp2, "0");
+	  fflush (stdout);
 	  exit (1);
 	}
 #if _SECRET_SHARING_ == 1
       ret = Verifier_SS (&P[i].PK, &P[i].pi, round);
 #else
-     ret = Verifier (&P[i].PK, &P[i].pi, round);
+      ret = Verifier (&P[i].PK, &P[i].pi, round);
 #endif
       tmplen += size;
       if (ret == 0)
