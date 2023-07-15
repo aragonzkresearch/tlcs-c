@@ -1,14 +1,15 @@
 CC=g++
 CCOPT=-Wall -fPIC -Wno-write-strings 
-DFLAGS0=-D_DEBUG_=1 -DCYC_GRP_BLS_G1=0
-DFLAGS1=-D_DEBUG_=1 -DCYC_GRP_BLS_G1=1 
+DFLAGS0=-D_DEBUG_=0 -DCYC_GRP_BLS_G1=0
+DFLAGS1=-D_DEBUG_=0 -DCYC_GRP_BLS_G1=1 
 DFLAGS2=-D_DEBUG_=0 -DCYC_GRP_BLS_G1=0
 DFLAGS3=-D_DEBUG_=0 -DCYC_GRP_BLS_G1=1
-DFLAGS3=-D_DEBUG_=1 -DCYC_GRP_BLS_G1=0 -DCYC_GRP_RSA=1
+DFLAGS3=-D_DEBUG_=0 -DCYC_GRP_BLS_G1=0 -DCYC_GRP_RSA=1
 MCL_INCLUDE_PATH=mcl/include
 IOPT=-I $(MCL_INCLUDE_PATH) -I ./include
-LDFLAGS=-lcrypto mcl/lib/libmclbn384_256.a mcl/lib/libmcl.a 
-all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1 tlcs_ss demo_prover_ss demo_verifier_ss demo_aggregator_ss demo_invert_ss prover4blockchain verifier4blockchain aggregator4blockchain invert4blockchain
+LDFLAGS=-lcrypto mcl/lib/libmclbn384_256.a mcl/lib/libmcl.a
+#all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1 tlcs_ss demo_prover_ss demo_verifier_ss demo_aggregator_ss demo_invert_ss chain_prover chain_invert chain_verifier prover4blockchain verifier4blockchain aggregator4blockchain invert4blockchain
+all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1 tlcs_ss demo_prover_ss demo_verifier_ss demo_aggregator_ss demo_invert_ss chain_prover chain_invert chain_verifier chain_aggregator chain_bjj_prover chain_bjj_invert chain_bjj_verifier chain_bjj_aggregator prover4blockchain verifier4blockchain aggregator4blockchain invert4blockchain
 prover_ss.o: src/prover_ss.c
 	$(CC) -o src/prover_ss.o $(CCOPT) $(IOPT) $(DFLAGS0) -D_SECRET_SHARING_=1 -c src/prover_ss.c
 babyjubjub.o: src/babyjubjub.c
@@ -135,5 +136,24 @@ demo_invert_ss: examples/demo_invert.c libtlcs_ss
 	$(CC) -o  bin/demo_invert_ss examples/demo_invert.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs_ss.so $(DFLAGS2) -D_SECRET_SHARING_=1 $(CCOPT)
 tests: examples/tests.c cyclic_group.o err.o pairing.o prover.o verifier.o invert.o aggregate.o serialize.o simulated_loe.o global_bufs.o babyjubjub.o
 	$(CC) -o  bin/tests src/cyclic_group.o src/err.o src/pairing.o src/prover.o src/verifier.o src/aggregate.o src/invert.o src/serialize.o src/babyjubjub.o src/tests/simulated_loe.o examples/tests.c src/global_bufs.o $(IOPT)  $(LDFLAGS) $(DFLAGS0) $(CCOPT)
+
+chain_prover: examples/chain_prover.c libtlcs
+	$(CC) -o  bin/chain_prover examples/chain_prover.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+chain_verifier: examples/chain_verifier.c libtlcs
+	$(CC) -o  bin/chain_verifier examples/chain_verifier.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+chain_invert: examples/chain_invert.c libtlcs
+	$(CC) -o  bin/chain_invert examples/chain_invert.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+chain_aggregator: examples/chain_aggregator.c libtlcs
+	$(CC) -o  bin/chain_aggregator examples/chain_aggregator.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+
+chain_bjj_prover: examples/chain_bjj_prover.c libtlcs
+	$(CC) -o  bin/chain_bjj_prover examples/chain_bjj_prover.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+chain_bjj_verifier: examples/chain_bjj_verifier.c libtlcs
+	$(CC) -o  bin/chain_bjj_verifier examples/chain_bjj_verifier.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+chain_bjj_invert: examples/chain_bjj_invert.c libtlcs
+	$(CC) -o  bin/chain_bjj_invert examples/chain_bjj_invert.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+chain_bjj_aggregator: examples/chain_bjj_aggregator.c libtlcs
+	$(CC) -o  bin/chain_bjj_aggregator examples/chain_bjj_aggregator.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
+
 clean:
 	rm -f bin/* *.o src/*.o examples/*.o lib/*.so
