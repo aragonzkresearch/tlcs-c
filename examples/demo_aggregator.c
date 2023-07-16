@@ -104,7 +104,16 @@ main (int argc, char **argv)
 #endif
 
   AggregatePublicKeys (&GPK, P, i, verified_proof);
-  fprintf (fp2, "%s", CycGrpG_toHexString (&GPK));
+  if (bjj_flag)
+    {
+      char *tmps;
+      tmps = (char *) malloc (131);	// 131 is the length of a serialized bjj point
+      Weierstrass2TwistedEdwards (tmps,
+				  CycGrpG_toHexStringUncompressed (&GPK));
+      fprintf (fp2, "%s", tmps);
+    }
+  else
+    fprintf (fp2, "%s", CycGrpG_toHexString (&GPK));
   fclose (fp2);
   Err ();
   return 0;

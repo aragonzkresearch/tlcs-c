@@ -88,7 +88,21 @@ main (int argc, char **argv)
 #else
   CycGrpG_new (&GPK);
 #endif
-  CycGrpG_fromHexString (&GPK, serialized_aggregated);
+  if (bjj_flag)
+    {
+      char W[131];
+      int ret;
+      ret = TwistedEdwards2Weierstrass (W, serialized_aggregated);
+      char E[131];
+      Weierstrass2TwistedEdwards (E, W);
+      if (ret == 1 || CycGrpG_fromHexString (&GPK, W) == -1)
+	{
+	  Log ("Error in deserializing the aggregate pk");
+	  return -1;
+	}
+    }
+  else
+    CycGrpG_fromHexString (&GPK, serialized_aggregated);
 
 // we set signature Signature to a real LOE's signature
 //const  char *sigStr="9544ddce2fdbe8688d6f5b4f98eed5d63eee3902e7e162050ac0f45905a55657714880adabe3c3096b92767d886567d0"; // this is the signature for round 1 of the unchained chain
@@ -141,8 +155,7 @@ main (int argc, char **argv)
 	  }
 	else
 	  {
-	    printf ("sk:%s\n",
-		    CycGrpZp_toHexString (&gsk));
+	    printf ("sk:%s\n", CycGrpZp_toHexString (&gsk));
 
 	  }
       }

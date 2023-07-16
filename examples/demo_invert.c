@@ -93,7 +93,21 @@ main (int argc, char **argv)
 #else
   CycGrpG_new (&GPK);
 #endif
-  CycGrpG_fromHexString (&GPK, serialized_aggregated);
+  if (bjj_flag)
+    {
+      char W[131];
+      int ret;
+      ret = TwistedEdwards2Weierstrass (W, serialized_aggregated);
+      char E[131];
+      Weierstrass2TwistedEdwards (E, W);
+      if (ret == 1 || CycGrpG_fromHexString (&GPK, W) == -1)
+	{
+	  Log ("Error in deserializing the aggregate pk");
+	  return -1;
+	}
+    }
+  else
+    CycGrpG_fromHexString (&GPK, serialized_aggregated);
   printf ("\nAggregate public key: %s %s\n", serialized_aggregated,
 	  CycGrpG_toHexString (&GPK));
 
