@@ -72,7 +72,14 @@ int main (int argc, char **argv) {
   #endif
 
   AggregatePublicKeys (&GPK, P, num_parties, verified_proof);
+	if (bjj_flag) {
+		char *tmps;
+		tmps = (char *) malloc (131);	// 131 is the length of a serialized bjj point
+		Weierstrass2TwistedEdwards (tmps, CycGrpG_toHexStringUncompressed (&GPK));
+  		fprintf (stdout, "%s", tmps);
+	} else {
+		fprintf (stdout, "%s", CycGrpG_toHexString(&GPK));
+	}
 
-  fprintf (stdout, "%s", CycGrpG_toHexString(&GPK));
-  return 0;
+	return 0;
 }
