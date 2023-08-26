@@ -24,7 +24,7 @@ The last command decrypts the ciphertext encoded in the two files ``ct1`` and ``
 ### How encryption works with the TLCS system
 
 The flow using the TLCS system would be the following.
-Suppose the TLCS system computed a public key ``03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD`` for the ``secp256k1`` elliptic curve. The openssl NID identifier for ``secp256k1`` is ``714``.
+Suppose the TLCS system computed a public key ``03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD`` for the ``secp256k1`` elliptic curve. The openssl NID identifier for ``secp256k1`` is ``714`` with respect to round number ``R``.
 
 Then we can run the following command:
 ```bash
@@ -38,7 +38,7 @@ Then, we can execute again the following command:
 ```
 Observe that the command is identical as in the execution without the TLCS system.
 
-Now suppose at a certain time the TLCS system releases a secret key ``9C8FC8D70B437C5545B71961DBBFDE3A3F59F53129E7B872FEA2E8BFC69EFBC7``.
+Now suppose at the time corresponding to round number ``R``, the TLCS system releases a secret key ``9C8FC8D70B437C5545B71961DBBFDE3A3F59F53129E7B872FEA2E8BFC69EFBC7``.
 We can now run the following command to convert such secret key in raw format into PEM format and stores the result in the file ``sk.pem``:
 ```bash
 ./rawskey2pem.sh 9C8FC8D70B437C5545B71961DBBFDE3A3F59F53129E7B872FEA2E8BFC69EFBC7 sk.pem
