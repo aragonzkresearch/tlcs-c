@@ -50,5 +50,6 @@ We can now run the command:
 ```
 and we will get the plaintext "ciao"!
 
+Observe that for usage with the TLCS system we do not need the ``setup.sh`` procedure.
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that the previous keys (both public and secret) are in PEM format and can be used by virtually all crypto libraries.
