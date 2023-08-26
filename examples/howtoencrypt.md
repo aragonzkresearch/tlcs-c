@@ -30,7 +30,7 @@ Then we can run the following command:
 ```bash
 ./rawpk2pem 714 03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD > pk.pem
 ```
-The last command computes a public key in PEM format and stores it in the file ``pk.pem``.
+The last command takes as input the identifer ``714`` for ``secp256k1`` and computes a public key in PEM format and stores it in the file ``pk.pem``.
 Then, we can execute again the following command:
 
 ```bash
