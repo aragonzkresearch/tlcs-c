@@ -9,7 +9,7 @@ MCL_INCLUDE_PATH=mcl/include
 IOPT=-I $(MCL_INCLUDE_PATH) -I ./include
 LDFLAGS=-lcrypto mcl/lib/libmclbn384_256.a mcl/lib/libmcl.a
 #all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1 tlcs_ss demo_prover_ss demo_verifier_ss demo_aggregator_ss demo_invert_ss chain_prover chain_invert chain_verifier prover4blockchain verifier4blockchain aggregator4blockchain invert4blockchain
-all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1 tlcs_ss demo_prover_ss demo_verifier_ss demo_aggregator_ss demo_invert_ss chain_prover chain_invert chain_verifier chain_aggregator chain_bjj_prover chain_bjj_invert chain_bjj_verifier chain_bjj_aggregator prover4blockchain verifier4blockchain aggregator4blockchain invert4blockchain
+all:  tlcs tlcs_bls_g1 tlcs_rsa tests demo_prover demo_aggregator demo_verifier demo_invert libtlcs libtlcs_bls_g1 tlcs_ss demo_prover_ss demo_verifier_ss demo_aggregator_ss demo_invert_ss chain_prover chain_invert chain_verifier chain_aggregator chain_bjj_prover chain_bjj_invert chain_bjj_verifier chain_bjj_aggregator prover4blockchain verifier4blockchain aggregator4blockchain invert4blockchain rawpk2pem
 prover_ss.o: src/prover_ss.c
 	$(CC) -o src/prover_ss.o $(CCOPT) $(IOPT) $(DFLAGS0) -D_SECRET_SHARING_=1 -c src/prover_ss.c
 babyjubjub.o: src/babyjubjub.c
@@ -154,6 +154,7 @@ chain_bjj_invert: examples/chain_bjj_invert.c libtlcs
 	$(CC) -o  bin/chain_bjj_invert examples/chain_bjj_invert.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
 chain_bjj_aggregator: examples/chain_bjj_aggregator.c libtlcs
 	$(CC) -o  bin/chain_bjj_aggregator examples/chain_bjj_aggregator.c $(IOPT)  $(LDFLAGS) ./lib/libtlcs.so $(DFLAGS2) $(CCOPT)
-
+rawpk2pem: examples/rawpk2pem.c
+	$(CC) -o examples/rawpk2pem examples/rawpk2pem.c -lcrypto -lssl
 clean:
 	rm -f bin/* *.o src/*.o examples/*.o lib/*.so

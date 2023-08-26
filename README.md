@@ -29,7 +29,7 @@ The prover, verifier and inversion have corresponding versions for the secret sh
 * 07-May-2023 Launch!
 
 ## Demo
-The source code contains a file * `example/tlcs.c` implementing a demo simulation of a TLCS activity using the routines in the library. 
+The source code contains a file * `examples/tlcs.c` implementing a demo simulation of a TLCS activity using the routines in the library. 
  The demo is supposed to simulate locally a TLCS protocol consisting of proving, verification, aggregation and inversion phases. 
 ### Example of usage of the demo
 ```bash
@@ -57,6 +57,9 @@ At time corresponding to round number `T`, LOE publishes a signature for the rou
 ```
 The previous command simulates the inversion phase in which after time corresponding to round `T` we aim at inverting the aggregated public key contained in the file `aggregated_pk`. To this purpose we pass as input to the latter program the file `proof` that contains the public keys of all parties who participated in the protocol and their respective proofs, the aggregate public key file `aggregated_pk` and, in our example, the list of 0/1 values `1 1` to indicate that the file `proof` contains two proofs that are both accepted.
 The program will ask for you for the signature of LOE of round `T` and should print out the secret key corresponding to the aggregated public key in the file `aggregated_pk`.
+
+## How to encrypt with our system
+See [Encryption Usage](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md) for examples on how to use our system to encrypt.
 
 ## Contacts
 
