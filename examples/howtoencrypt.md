@@ -52,12 +52,13 @@ and we will get the plaintext "ciao"!
 
 Observe that for usage with the TLCS system we do not need the ``setup.sh`` procedure.
 ## Java
-For Java with Bouncycastle provider you can use the PEM file generated using the program ``rawpk2pem`` as shown before.
-For the secret key, it can needed to first convert the secret key ``sk.pem`` generated before in ``pkcs8`` format as shown in the following command:
+As an example, in [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIES.java) we show an implementation of the ECIES public key encryption scheme in Java (it may need the ``bouncycastle`` provider to run successfully) that assumes public key in PEM format and secret key in ``pkcs8`` format.
+You can use the public key in PEM format generated using the program ``rawpk2pem`` as shown before.
+For the secret key, you can convert the secret key ``sk.pem`` generated before in ``pkcs8`` format as shown in the following command:
 ```bash
 openssl pkcs8 -topk8  -in sk.pem -out sk.pkcs8 -nocrypt
 ```
-The so created files can be used to encrypt in Java as shown in the example [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIES.java) that implements the ECIES public key encryption scheme in Java.
+With these two files, you can use ``ECIES.java`` in a straightforward way.
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that the previous keys (both public and secret) can be converted in PEM,PKCS8 etc. formats and so can be used by virtually all crypto libraries.
 
