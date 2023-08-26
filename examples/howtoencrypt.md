@@ -1,7 +1,7 @@
 # How to use our system to encrypt
 
 ## Openssl examples
-In the files `examples/setup.sh`,  `examples/encrypt.sh` and `examples/decrypt.sh` we provided a complete public key encryption system based on openssl. Precisely, we implement the [Integrated Encryption Sscheme (IES)](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme) public key encryption scheme with respect to the curve ``secp256k1`` and using ``aes256`` as symmetric encryption scheme.
+In the files `examples/setup.sh`,  `examples/encrypt.sh` and `examples/decrypt.sh` we provided a complete public key encryption system based on openssl. Precisely, we implement the [Integrated Encryption Sscheme (IES)](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme) public key encryption scheme with respect to the curve ``secp256k1`` and using ``aes256`` as symmetric encryption scheme and ``pbkdf2`` as key derivation function.
 Let us first show how this system would work in a normal scenario (without using a TLCS system).
 (Henceforth, we suppose to be in the directory ``examples``.)
 
