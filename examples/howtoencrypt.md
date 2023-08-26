@@ -24,7 +24,7 @@ The last command decrypts the ciphertext encoded in the two files ``ct1`` and ``
 ### How encryption works with the TLCS system
 
 The flow using the TLCS system would be the following.
-Suppose the TLCS system computed a public key ``03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD`` for the ``secp256k1`` whose openssl NID identifier is ``714``.
+Suppose the TLCS system computed a public key ``03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD`` for the ``secp256k1`` elliptic curve. The openssl NID identifier for ``secp256k1`` is ``714``.
 
 Then we can run the following command:
 ```bash
