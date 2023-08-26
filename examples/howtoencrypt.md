@@ -8,7 +8,7 @@ Let us first show how this system would work in a normal scenario (without using
 ```bash
 ./setup.sh sk.pem pk.pem
 ```
-The latter writes a secret key in the file ``sk.pem`` and a public key in the file ``pk.pem``.
+The last command writes a secret key in the file ``sk.pem`` and a public key in the file ``pk.pem``.
 ```bash
 ./encrypt.sh pk.pem "ciao" ct1 ct2
 ```
