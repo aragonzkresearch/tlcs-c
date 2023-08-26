@@ -17,7 +17,7 @@ The latter encrypts the string "ciao" using the public key computed before and s
 ```bash
 ./decrypt.sh sk.pem ct1 ct2
 ```
-The latter decrypts the ciphertext encoded in the two files ``ct1`` and ``ct2`` computed previously using the secret key ``sk.pem`` compute by ``setup.sh`` and outputs the corresponding message in the ``stdout``.
+The latter decrypts the ciphertext encoded in the two files ``ct1`` and ``ct2`` computed previously using the secret key ``sk.pem`` compute by ``setup.sh`` and outputs the decrypted message (that should be "ciao" in our example) in the ``stdout``.
 
 The flow using the TLCS system would be the following.
 Suppose the TLCS system computed a public key ``03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD`` for the ``secp256k1`` whose openssl NID identifier is ``714``.
