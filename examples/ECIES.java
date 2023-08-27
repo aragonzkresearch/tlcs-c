@@ -36,7 +36,7 @@ public class ECIES
   public static void main (String[]args) throws Exception, IOException
   {
 
-    String name = "secp256k1";	// type of elliptic curve, other examples secp256r1
+    String name = "secp256k1";	// type of elliptic curve, choose any other type supported both by our TLCS system AND the JCA/bouncycastle
     String plainText = "Ciao";
     KeyFactory kf = KeyFactory.getInstance ("ECDH");
     Cipher iesCipher = Cipher.getInstance ("ECIES");
