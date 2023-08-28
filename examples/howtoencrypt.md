@@ -104,7 +104,7 @@ We overwrite the example of ``ecies-wasm`` with our file ``example/index.js`` th
 We now suppose to be in the directory ``example``.
 
 ```bash
-cp index.js example/rs-wasm/ 
+cp index.js rs-wasm/example
 ```
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect our TLCS keys.
 
