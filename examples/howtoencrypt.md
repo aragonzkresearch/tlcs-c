@@ -100,7 +100,7 @@ We will use the [ecies-wasm](https://github.com/ecies/rs-wasm) package that is t
 git clone  https://github.com/ecies/rs-wasm
 ```
 
-We overwrite the example of ``ecies-wasm`` with our file ``example/index.js`` that uses the TLCS keys shown in this document.
+We overwrite the example of ``ecies-wasm`` with our file ``example/index.js`` that uses the TLCS keys shown in this document and a simple hex to binary conversion function ``fromHexString``.
 We now suppose to be in the directory ``example``.
 
 ``bash
