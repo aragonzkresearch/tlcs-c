@@ -103,7 +103,7 @@ git clone  https://github.com/ecies/rs-wasm
 We overwrite the example of ``ecies-wasm`` with our file ``example/index.js`` that uses the TLCS keys shown in this document and a simple hex to binary conversion function ``fromHexString``.
 We now suppose to be in the directory ``example``.
 
-``bash
+```bash
 cp index.js example/rs-wasm/ 
 ```
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example to encrypt and decrypt with respect our TLCS keys.
