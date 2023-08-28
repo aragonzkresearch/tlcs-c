@@ -93,6 +93,21 @@ eciespy -d -k sk <ct
 ```
 and we will get the right plaintext "ciao".
 
+## Javascript, Wasm and modern browsers
+We will use the [ecies-wasm](https://github.com/ecies/rs-wasm) package that is the ``wasm`` version of the previous Python library.
+
+```bash
+git clone  https://github.com/ecies/rs-wasm
+```
+
+We overwrite the example of ``ecies-wasm`` with our file ``example/index.js`` that uses the TLCS keys shown in this document.
+We now suppose to be in the directory ``example``.
+
+``bash
+cp index.js example/rs-wasm/ 
+```
+You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example to encrypt and decrypt with respect our TLCS keys.
+
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that we showed that the public and secret keys offered by our system can be converted in known formats and so can be used by virtually all crypto libraries.
 
