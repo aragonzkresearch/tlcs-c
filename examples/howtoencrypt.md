@@ -127,7 +127,7 @@ We assume the file ``pk.pem`` is created from the public key for round ``R`` as 
 Suppose that Alice wants to send an encrypted message for round ``R`` to Bob whose email address is ``user@gmail.com``.
 When the public key ``pk.pem`` for round ``R`` is available, Alice can run the following script:
 ```bash
-../pk2cert.sh pk.pem user@gmail.com CAsk.pem CA.pem
+./pk2cert.sh pk.pem user@gmail.com CAsk.pem CA.pem
 ````
 The command will ask Alice to input the data corresponding to the certificate you are creating such as Country, Organization, etc.
 The output certificate will be user@gmail.com.crt.
@@ -171,16 +171,17 @@ Virtually, it should be possible to integrate this with email clients in the fol
 Suppose that Alice wants to send an encrypted message for round ``R`` to Bob whose email address is ``user@gmail.com``.
 First, the sender Alice needs to import the corresponding certificate ``user@gmail.com.crt`` as shown before.
 Second, after having imported such certificate, Alice also needs to add ``CA.pem`` as trusted root certificate in her email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
-Finally, Alice can use her favourite email client to send an encrypted message to Bob.
+Finally, Alice can use her favourite email client to send an encrypted message to Bob's email address ``user@gmail.com``.
 
 
-In order to be able to decrypt after round ``R``, Bob with email ``user@gmail.com`` needs to perform the following operations.
+In order to be able to decrypt after round ``R``, Bob needs to perform the following operations.
 As shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples), Bob can compute the secret key ``sk.pem``.
 Then, Bob needs to compute the certificate ``user@gmail.com.p12`` output by the following script:
 ```bash
 ../sk2cert.sh sk.pem user@gmail.com CAsk.pem CA.pem
 ````
-and to import such certificate in his own email client or OS.
+Bob will be asked to input his own private data that should be equal to the data that Alice used to compute ``user@gmail.com.crt``.
+Then. Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS.
 
 Finally, after having imported such certificate, Bob also needs to add ``CA.pem`` as trusted root certificate in his email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
 
