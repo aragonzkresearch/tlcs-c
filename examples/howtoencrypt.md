@@ -180,10 +180,14 @@ Then, Bob needs to compute the certificate ``user@gmail.com.p12`` output by the 
 ```bash
 ./sk2cert.sh sk.pem user@gmail.com CAsk.pem CA.pem
 ````
-Bob will be asked to input his own private data that should be equal to the data that Alice used to compute ``user@gmail.com.crt``.
-Then. Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS.
+Bob will be asked to input his own private data that should be equal to the data that Alice used to compute ``user@gmail.com.crt``. Moreover, Bob will be asked for a password to protect this private certificate. Then, Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS.
 
 Finally, after having imported such certificate, Bob also needs to add ``CA.pem`` as trusted root certificate in his email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
+
+#### Outlook with GpgOL plugin
+We successfully tested [gpg4](https://www.gpg4win.org/version4.html) with the ``Outlook`` email client.
+``gpg4`` comes with the ``Kleopatra`` app that allowed us to successfully import the certificate ``user@gmail.com.crt`` created as before and after importing it, we could send an encrypted email to ``user@gmail.com`` successfully.
+The email stayed encrypted until we imported the corresponding private certificate ``user@gmail.com.p12`` that allowed us to decrypt.
 
 #### Issues
 The issue to prevent all this to work inside email clients can be the support for ECC.
