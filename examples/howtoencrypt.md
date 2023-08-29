@@ -110,7 +110,7 @@ You can now follow the instructions given [here](https://github.com/ecies/rs-was
 
 ## Encrypted emails and digital certificates
 The issue of creating digital certificates from TLCS public keys is in the fact that you need to create the certificate from a TLCS public key when the corresponding secret key is not available yet.
-Unfortunately, standard managament of certificates requires knowledge of secret key at time of creation of the certificate.
+Standard managament tools for digital certificates require knowledge of a secret key at time of creation of the certificate (or create secret key on the fly).
 
 We have been able to exploit the ``force_pubkey`` option in ``openssl`` to bypass this issue.
 
