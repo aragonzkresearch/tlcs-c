@@ -187,7 +187,7 @@ Finally, after having imported such certificate, Bob also needs to add ``CA.pem`
 
 #### Issues
 The issue to prevent all this to work inside email clients can be the support for ECC.
-
+We also remark that while `openssl cms`` works, ``openssl smime`` does not. The former supports only recents versions of the S/MIME and its formats could not be supported by all S/MIME softwares.
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that we showed that the public and secret keys offered by our system can be converted in known formats and so can be used by virtually all crypto libraries.
 
