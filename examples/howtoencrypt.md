@@ -167,7 +167,8 @@ openssl cms -decrypt -in ct.p7m -CAfile CA.pem  -inkey sk.pem
 ```
 ### Encrypted emails from email clients
 Virtually, it should be possible to integrate this with email clients in the following way.
-First, the sender Alice needs to import the corresponding certificate ``user@gmail.com.crt``.
+Suppose that Alice wants to send an encrypted message for round ``R`` to Bob whose email address is ``user@gmail.com``.
+First, the sender Alice needs to import the corresponding certificate ``user@gmail.com.crt`` as shown before.
 Second, after having imported such certificate, Alice also needs to add ``CA.pem`` as trusted root certificate in her email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
 Finally, Alice can use her favourite email client to send an encrypted message to Bob.
 
