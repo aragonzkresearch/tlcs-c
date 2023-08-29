@@ -47,7 +47,7 @@ public class ECIESfromCertificate
     {
 
 
-
+	// this file should point to the digital certificate obtained by the TLCS public key of some round R
       InputStream in = new FileInputStream ("user@gmail.com.crt");
 
       // create the certificate factory 

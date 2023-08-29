@@ -189,6 +189,7 @@ Finally, after having imported such certificate, Bob also needs to add ``CA.pem`
 Consider the certificate ``user@gmail.com.crt`` created as above.
 We provide a sample Java code [ECIESfromCertificate.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIESfromCertificate.java) that works identically to [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIES.java) except that the public key is taken by the certificate ``user@gmail.com.crt``.
 This can be useful in many libraries where the encryption procedure only accepts valid ``X.509`` certificates.
+Observe that for many applications such a certificate could be one of an arbitrary user (that is, built filling it with fake data) containing as only useful information the round ``R`` to which it corresponds.
 
 #### Issues
 The issue to prevent all this to work inside email clients can be the support for ECC.
