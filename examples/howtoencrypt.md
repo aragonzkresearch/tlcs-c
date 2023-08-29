@@ -108,6 +108,70 @@ cp index.js rs-wasm/example
 ```
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect our TLCS keys.
 
+### Encrypted emails and digital certificates
+The issue of creating digital certificates from TLCS public keys is in the fact that when you need to create the certificate from a TLCS public key when the corresponding secret key is not already available.
+Unfortunately, standard managament of certificates requires knowledge of secret key at time of creation of the certificate.
+
+We have been able to exploit the ``force_pubkey`` option in ``openssl`` to bypass this issue.
+
+The process of creating a certificate for the ``user@gmail.com`` is the following.
+Firstly, we need to create a Certificate Authority (CA) pair.
+
+This is done with the script ``setupCA.sh``:
+```bash
+./setupCA.sh CAsk.pem CApk.pem
+```
+The CA's secret key is now in ``CAsk.pem`` and the certificate is in ``CApk.pem``. The command will ask to input the data of the certification authority.
+We assume the file ``pk.pem`` is created from the public key for round ``R`` as shown at the beginning.
+
+Then, when the public key ``pk.pem`` for round ``R`` is available you can run the following script:
+```bash
+../pk2cert.sh pk.pem user@gmail.com CAsk.pem CA.pem
+````
+The command will ask you to input the data corresponding to the certificate you are creating such as Country, Organization, etc.
+The output certificate will be user@gmail.com.crt.
+#### Encrypted emails from command line
+Now, you can encrypt an email with content "ciao" to this recipient with the following command:
+```bash
+echo "ciao" >msg
+openssl cms -encrypt -in msg -out ct.p7m -CAfile CA.pem  -from "youraddress@outlook.com" -to "user@gmail.com" -subject "email to the future" user@gmail.com.crt
+```
+The encrypted message is stored in the file ``ct.p7m`` and will look like:
+```
+To: user@gmail.com
+From: youraddress@outlook.com
+Subject: email to the future
+MIME-Version: 1.0
+Content-Disposition: attachment; filename="smime.p7m"
+Content-Type: application/pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"
+Content-Transfer-Encoding: base64
+
+MIIBogYJKoZIhvcNAQcDoIIBkzCCAY8CAQIxggFboYIBVwIBA6BRoU8wCQYHKoZI
+zj0CAQNCAATo4sQpUGNr1RSdxhhIHQ5/0+DNd9F5PjxjMKQRbL4tazM2JEKSIAaP
+E5vo+b6oQugaDiQkHffWvc4Gsi8yPofZMBwGCSuBBRCGSD8AAjAPBgsqhkiG9w0B
+CRADBgUAMIHgMIHdMIGwMIGXMQswCQYDVQQGEwJTVTELMAkGA1UECAwCWlUxDDAK
+BgNVBAcMA1p1ZzEWMBQGA1UECgwNdGltZWxvY2suem9uZTEWMBQGA1UECwwNdGlt
+ZWxvY2suem9uZTEWMBQGA1UEAwwNdGltZWxvY2suem9uZTElMCMGCSqGSIb3DQEJ
+ARYWdGltZWxvY2tAdGltZWxvY2suem9uZQIUAyx2y7YY6IzvFpBtuvLDRVX3RwME
+KEzRSAuOITUY6eVNsvFoycOSu+WnukyiXziy2EGSgCBUJHIMiboEofkwKwYJKoZI
+hvcNAQcBMBQGCCqGSIb3DQMHBAhIIrIxxjQzB4AImRmqeljdJ08=
+```
+At time ``R``, as shown at the beginning, we can compute the secret key ``sk.pem``.
+You can now run the following script to decrypt and get the string "ciao":
+```bash
+openssl cms -decrypt -in ct.p7m -CAfile CA.pem  -inkey sk.pem
+```
+#### Encrypted emails from email clients
+Virtually, it should be possible to integrate this with email clients by importing the corresponding certificate ``user@gmail.com.crt`` and then using your favourite email client to send emails to address ``user@gmail.com``.
+
+Moreover, the user ``user@gmail.com`` who needs to decrypt after round ``R`` should be able to set as his/her own decryption certificate the file ``user@gmail.com.p12`` output by the following script:
+```bash
+../sk2cert.sh sk.pem user@gmail.com CAsk.pem CA.pem
+````
+After having imported such certificate, the user ``user@gmail.com`` also needs to add ``CA.pem`` as trusted root certificate in his/her email system (or OS).
+
+The issue to prevent this to work inside email clients can be the support for ECC.
+
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that we showed that the public and secret keys offered by our system can be converted in known formats and so can be used by virtually all crypto libraries.
 
