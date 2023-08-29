@@ -114,8 +114,8 @@ Standard managament tools for digital certificates require knowledge of a secret
 
 We have been able to exploit the ``force_pubkey`` option in ``openssl`` to bypass this issue.
 
-The process of creating a certificate for the ``user@gmail.com`` is the following.
-Firstly, we need to create a Certificate Authority (CA) pair.
+The flow to use our TLCS system to create timed-certificates is the following.
+Firstly, we need to create a Certificate Authority (CA) pair that will be used to sign all users' certificates for all rounds.
 
 This is done with the script ``setupCA.sh``:
 ```bash
