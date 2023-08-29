@@ -122,7 +122,7 @@ This is done with the script ``setupCA.sh``:
 ./setupCA.sh CAsk.pem CApk.pem
 ```
 The CA's secret key is now in ``CAsk.pem`` and the certificate is in ``CApk.pem``. The command will ask to input the data of the certification authority.
-We assume the file ``pk.pem`` is created from the public key for round ``R`` as shown at the beginning.
+We assume the file ``pk.pem`` is created from the public key for round ``R`` as shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples).
 
 Then, when the public key ``pk.pem`` for round ``R`` is available you can run the following script:
 ```bash
@@ -158,7 +158,8 @@ ARYWdGltZWxvY2tAdGltZWxvY2suem9uZQIUAyx2y7YY6IzvFpBtuvLDRVX3RwME
 KEzRSAuOITUY6eVNsvFoycOSu+WnukyiXziy2EGSgCBUJHIMiboEofkwKwYJKoZI
 hvcNAQcBMBQGCCqGSIb3DQMHBAhIIrIxxjQzB4AImRmqeljdJ08=
 ```
-At time ``R``, as shown at the beginning, we can compute the secret key ``sk.pem``.
+
+At time ``R``, as shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples), we can compute the secret key ``sk.pem``.
 You can now run the following script to decrypt and get the string "ciao":
 ```bash
 openssl cms -decrypt -in ct.p7m -CAfile CA.pem  -inkey sk.pem
