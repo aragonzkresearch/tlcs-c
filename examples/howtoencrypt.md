@@ -110,7 +110,7 @@ You can now follow the instructions given [here](https://github.com/ecies/rs-was
 
 ## Encrypted emails and digital certificates
 The issue of creating digital certificates from TLCS public keys is in the fact that you need to create the certificate from a TLCS public key when the corresponding secret key is not available yet.
-Standard managament tools for digital certificates require knowledge of a secret key at time of creation of the certificate (or create the secret key on the fly).
+Standard managament tools for ``X.509`` digital certificates require knowledge of a secret key at time of creation of the certificate (or create the secret key on the fly).
 
 We have been able to exploit the ``force_pubkey`` option in ``openssl`` to bypass this issue.
 
@@ -184,6 +184,11 @@ Bob will be asked to input his own private data that should be equal to the data
 Then. Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS.
 
 Finally, after having imported such certificate, Bob also needs to add ``CA.pem`` as trusted root certificate in his email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
+
+### Using the so create digital certificates in Java to encrypt
+Consider the certificate ``user@gmail.com.crt`` created as above.
+We provide a sample Java code [ECIESfromCertificate.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIESfromCertificate.java) that works identically to [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIES.java) except that the public key is taken by the certificate ``user@gmail.com.crt``.
+This can be useful in many libraries where the encryption procedure only accepts valid ``X.509`` certificates.
 
 #### Issues
 The issue to prevent all this to work inside email clients can be the support for ECC.
