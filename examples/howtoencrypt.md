@@ -124,16 +124,16 @@ This is done with the script ``setupCA.sh``:
 The CA's secret key is now in ``CAsk.pem`` and the certificate is in ``CApk.pem``. The command will ask to input the data of the certification authority.
 We assume the file ``pk.pem`` is created from the public key for round ``R`` as shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples).
 
-Then, when the public key ``pk.pem`` for round ``R`` is available you can run the following script:
+Then, when the public key ``pk.pem`` for round ``R`` is available, Alice can run the following script:
 ```bash
 ../pk2cert.sh pk.pem user@gmail.com CAsk.pem CA.pem
 ````
-The command will ask you to input the data corresponding to the certificate you are creating such as Country, Organization, etc.
+The command will ask Alice to input the data corresponding to the certificate you are creating such as Country, Organization, etc.
 The output certificate will be user@gmail.com.crt.
 
 Notice that we could encode the round ``R`` in one of the certificate fields, in this case each user certificate would be bound to a specific time.
 ### Encrypted emails from command line
-Now, you can encrypt an email with content "ciao" to this recipient with the following command:
+Now, Alice can encrypt an email with content "ciao" to this recipient with the following command:
 ```bash
 echo "ciao" >msg
 openssl cms -encrypt -in msg -out ct.p7m -CAfile CA.pem  -from "youraddress@outlook.com" -to "user@gmail.com" -subject "email to the future" user@gmail.com.crt
@@ -158,22 +158,32 @@ ARYWdGltZWxvY2tAdGltZWxvY2suem9uZQIUAyx2y7YY6IzvFpBtuvLDRVX3RwME
 KEzRSAuOITUY6eVNsvFoycOSu+WnukyiXziy2EGSgCBUJHIMiboEofkwKwYJKoZI
 hvcNAQcBMBQGCCqGSIb3DQMHBAhIIrIxxjQzB4AImRmqeljdJ08=
 ```
+Alice will send this file ``ct.p7m`` to Bob.
 
-At time ``R``, as shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples), we can compute the secret key ``sk.pem``.
-You can now run the following script to decrypt and get the string "ciao":
+At time ``R``, as shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples), Bob can compute the secret key ``sk.pem``.
+Bob can now run the following script to decrypt and get the string "ciao":
 ```bash
 openssl cms -decrypt -in ct.p7m -CAfile CA.pem  -inkey sk.pem
 ```
 ### Encrypted emails from email clients
-Virtually, it should be possible to integrate this with email clients by importing the corresponding certificate ``user@gmail.com.crt`` and then using your favourite email client to send emails to address ``user@gmail.com``.
+Virtually, it should be possible to integrate this with email clients in the following way.
+First, the sender Alice needs to import the corresponding certificate ``user@gmail.com.crt``.
+Second, after having imported such certificate, Alice also needs to add ``CA.pem`` as trusted root certificate in her email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
+Finally, Alice can use her favourite email client to send an encrypted message to Bob.
 
-Moreover, the user ``user@gmail.com`` who needs to decrypt after round ``R`` should be able to set as his/her own decryption certificate the file ``user@gmail.com.p12`` output by the following script:
+
+In order to be able to decrypt after round ``R``, Bob with email ``user@gmail.com`` needs to perform the following operations.
+As shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples), Bob can compute the secret key ``sk.pem``.
+Then, Bob needs to compute the certificate ``user@gmail.com.p12`` output by the following script:
 ```bash
 ../sk2cert.sh sk.pem user@gmail.com CAsk.pem CA.pem
 ````
-After having imported such certificate, the user ``user@gmail.com`` also needs to add ``CA.pem`` as trusted root certificate in his/her email system (or OS).
+and to import such certificate in his own email client or OS.
 
-The issue to prevent this to work inside email clients can be the support for ECC.
+Finally, after having imported such certificate, Bob also needs to add ``CA.pem`` as trusted root certificate in his email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
+
+#### Issues
+The issue to prevent all this to work inside email clients can be the support for ECC.
 
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that we showed that the public and secret keys offered by our system can be converted in known formats and so can be used by virtually all crypto libraries.
