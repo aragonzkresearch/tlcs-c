@@ -108,7 +108,7 @@ cp index.js rs-wasm/example
 ```
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect our TLCS keys.
 
-### Encrypted emails and digital certificates
+## Encrypted emails and digital certificates
 The issue of creating digital certificates from TLCS public keys is in the fact that when you need to create the certificate from a TLCS public key when the corresponding secret key is not already available.
 Unfortunately, standard managament of certificates requires knowledge of secret key at time of creation of the certificate.
 
@@ -132,7 +132,7 @@ The command will ask you to input the data corresponding to the certificate you 
 The output certificate will be user@gmail.com.crt.
 
 Notice that we could encode the round ``R`` in one of the certificate fields, in this case each user certificate would be bound to a specific time.
-#### Encrypted emails from command line
+### Encrypted emails from command line
 Now, you can encrypt an email with content "ciao" to this recipient with the following command:
 ```bash
 echo "ciao" >msg
@@ -163,7 +163,7 @@ You can now run the following script to decrypt and get the string "ciao":
 ```bash
 openssl cms -decrypt -in ct.p7m -CAfile CA.pem  -inkey sk.pem
 ```
-#### Encrypted emails from email clients
+### Encrypted emails from email clients
 Virtually, it should be possible to integrate this with email clients by importing the corresponding certificate ``user@gmail.com.crt`` and then using your favourite email client to send emails to address ``user@gmail.com``.
 
 Moreover, the user ``user@gmail.com`` who needs to decrypt after round ``R`` should be able to set as his/her own decryption certificate the file ``user@gmail.com.p12`` output by the following script:
