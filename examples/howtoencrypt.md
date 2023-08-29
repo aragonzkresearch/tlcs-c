@@ -178,7 +178,7 @@ In order to be able to decrypt after round ``R``, Bob needs to perform the follo
 As shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples), Bob can compute the secret key ``sk.pem``.
 Then, Bob needs to compute the certificate ``user@gmail.com.p12`` output by the following script:
 ```bash
-../sk2cert.sh sk.pem user@gmail.com CAsk.pem CA.pem
+./sk2cert.sh sk.pem user@gmail.com CAsk.pem CA.pem
 ````
 Bob will be asked to input his own private data that should be equal to the data that Alice used to compute ``user@gmail.com.crt``.
 Then. Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS.
