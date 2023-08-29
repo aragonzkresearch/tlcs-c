@@ -124,7 +124,8 @@ This is done with the script ``setupCA.sh``:
 The CA's secret key is now in ``CAsk.pem`` and the certificate is in ``CApk.pem``. The command will ask to input the data of the certification authority.
 We assume the file ``pk.pem`` is created from the public key for round ``R`` as shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples).
 
-Then, when the public key ``pk.pem`` for round ``R`` is available, Alice can run the following script:
+Suppose that Alice wants to send an encrypted message for round ``R`` to Bob whose email address is ``user@gmail.com``.
+When the public key ``pk.pem`` for round ``R`` is available, Alice can run the following script:
 ```bash
 ../pk2cert.sh pk.pem user@gmail.com CAsk.pem CA.pem
 ````
