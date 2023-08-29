@@ -185,15 +185,16 @@ Then. Bob must import such certificate ``user@gmail.com.p12`` in his own email c
 
 Finally, after having imported such certificate, Bob also needs to add ``CA.pem`` as trusted root certificate in his email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
 
+#### Issues
+The issue to prevent all this to work inside email clients can be the support for ECC.
+We also remark that while `openssl cms`` works, ``openssl smime`` does not. The former supports only recents versions of the S/MIME and its formats could not be supported by all S/MIME softwares.
+
 ### Using the so create digital certificates in Java to encrypt
 Consider the certificate ``user@gmail.com.crt`` created as above.
 We provide a sample Java code [ECIESfromCertificate.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIESfromCertificate.java) that works identically to [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIES.java) except that the public key is taken by the certificate ``user@gmail.com.crt``.
 This can be useful in many libraries where the encryption procedure only accepts valid ``X.509`` certificates.
 Observe that for many applications such a certificate could be filled with fake data and containing as only useful information the round ``R`` to which it corresponds.
 
-#### Issues
-The issue to prevent all this to work inside email clients can be the support for ECC.
-We also remark that while `openssl cms`` works, ``openssl smime`` does not. The former supports only recents versions of the S/MIME and its formats could not be supported by all S/MIME softwares.
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that we showed that the public and secret keys offered by our system can be converted in known formats and so can be used by virtually all crypto libraries.
 
