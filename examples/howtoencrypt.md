@@ -109,7 +109,7 @@ cp index.js rs-wasm/example
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect our TLCS keys.
 
 ## Encrypted emails and digital certificates
-The issue of creating digital certificates from TLCS public keys is in the fact that when you need to create the certificate from a TLCS public key when the corresponding secret key is not already available.
+The issue of creating digital certificates from TLCS public keys is in the fact that when you need to create the certificate from a TLCS public key when the corresponding secret key is not available yet.
 Unfortunately, standard managament of certificates requires knowledge of secret key at time of creation of the certificate.
 
 We have been able to exploit the ``force_pubkey`` option in ``openssl`` to bypass this issue.
