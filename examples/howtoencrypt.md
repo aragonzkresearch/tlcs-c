@@ -130,6 +130,8 @@ Then, when the public key ``pk.pem`` for round ``R`` is available you can run th
 ````
 The command will ask you to input the data corresponding to the certificate you are creating such as Country, Organization, etc.
 The output certificate will be user@gmail.com.crt.
+
+Notice that we could encode the round ``R`` in one of the certificate fields, in this case each user certificate would be bound to a specific time.
 #### Encrypted emails from command line
 Now, you can encrypt an email with content "ciao" to this recipient with the following command:
 ```bash
