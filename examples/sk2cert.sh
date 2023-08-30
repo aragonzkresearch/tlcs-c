@@ -13,5 +13,5 @@ fi
 
 
 openssl x509 -req -days 365 -in $2.csr.crt -signkey $1 -out $2.sk.crt -CA $4 -CAkey $3 -CAcreateserial
-openssl pkcs12 -export -in $2.sk.crt -inkey sk.pem -out $2.p12
+openssl pkcs12 -export -in $2.sk.crt -inkey $1 -out $2.p12
 
