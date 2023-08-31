@@ -188,6 +188,15 @@ Then, Bob must import such certificate ``user@gmail.com.p12`` in his own email c
 
 Finally, after having imported such certificate, Bob also needs to add ``CA.pem`` as trusted root certificate in his email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
 
+If now Bob opens his email client, he should find the encrypted email unencrypted.
+
+Note that most email clients send as attachment a file ``smime.p7m`` contained the encrypted body of the email.
+You can use the following command:
+```bash
+openssl asn1parse -in smime.p7m -inform der
+```
+to parse the encrypted message, and one of the fields corresponds to the serial number (S/N) of the Bob's certificates.
+The email clients use such information to identify the certificate used to encrypt.
 #### Issues
 The issue to prevent all this to work inside email clients can be the support for ECC.
 We also remark that while `openssl cms`` works, ``openssl smime`` does not. The former supports only recents versions of the S/MIME and its formats could not be supported by all S/MIME softwares.
