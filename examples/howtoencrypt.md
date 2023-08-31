@@ -127,7 +127,7 @@ This is done with the script ``setupCA.sh``:
 The CA's secret key is now in ``CAsk.pem`` and the certificate is in ``CApk.pem``. The command will ask to input the data of the certification authority.
 
 Suppose that Alice wants to send an encrypted message for round ``R`` to Bob whose email address is ``user@gmail.com``.
-Suppose that `T` is the time corresponding to round `R`, e.g. `T` is equal to `12/13/2023` (the time is an exact date in the format ``MM/DD/YYYY`).
+Suppose that ``T`` is the time corresponding to round ``R``, e.g. ``T`` is equal to ``12/13/2023`` (the time is an exact date in the format ``MM/DD/YYYY``).
 We assume the file ``pk.pem`` is created from the public key for round ``R`` as shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples).
 When the public key ``pk.pem`` for round ``R`` is available, Alice can run the following script:
 ```bash
