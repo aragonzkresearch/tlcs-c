@@ -1,9 +1,9 @@
 # How to use our system to encrypt
 
-## Openssl examples
-In the files `examples/setup.sh`,  `examples/encrypt.sh` and `examples/decrypt.sh` we provided a complete public key encryption system based on openssl. Precisely, we implement the [Integrated Encryption Sscheme (IES)](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme) public key encryption scheme with respect to the curve ``secp256k1`` and using ``aes256`` as symmetric encryption scheme and ``pbkdf2`` as key derivation function.
+## Encrypt with Openssl tools and libraries
+In the files `examples/scripts/setup.sh`,  `examples/scripts/encrypt.sh` and `examples/scripts/decrypt.sh` we provided a complete public key encryption system based on openssl. Precisely, we implement the [Integrated Encryption Sscheme (IES)](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme) public key encryption scheme with respect to the curve ``secp256k1`` and using ``aes256`` as symmetric encryption scheme and ``pbkdf2`` as key derivation function.
 Let us first show how this system would work in a normal scenario (without using a TLCS system).
-(Henceforth, we suppose to be in the directory ``examples``.)
+(Henceforth, we suppose to be in the directory ``examples/scripts``.)
 
 
 ### How encryption works without the TLCS system
@@ -57,7 +57,7 @@ We assume the availability of the files  ``pk.pem`` and ``sk.pem`` as computed a
 Unfortunately, the standard Java Crypto Architecture (JCA) may not support elliptic curve cryptography (ECC). However, ECC is usually done using the famous [bouncycastle](https://www.bouncycastle.org/) provider.
 Your Java code may not depend at all from the specific provider you use, it will be the JCA to select the best provider that in your system offers ECC but be aware that if you do not have any provider at all that supports ECC, JCA will raise an error.
 
-As an example, in [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIES.java) we show an implementation of the ECIES public key encryption scheme in Java (it may need the ``bouncycastle`` provider to run successfully) that assumes public key in PEM format and secret key in ``pkcs8`` format.
+As an example, in [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIES.java) we show an implementation of the ECIES public key encryption scheme in Java (it may need the ``bouncycastle`` provider to run successfully) that assumes public key in PEM format and secret key in ``pkcs8`` format.
 You can use the public key in PEM format generated using the program ``rawpk2pem`` as shown before.
 For the secret key, you can convert the secret key ``sk.pem`` generated before in ``pkcs8`` format as shown in the following command:
 ```bash
@@ -95,16 +95,17 @@ and we will get the right plaintext "ciao".
 
 ## Javascript, Wasm and modern browsers
 We will use the [ecies-wasm](https://github.com/ecies/rs-wasm) package that is the ``wasm`` version of the previous Python library.
+We now suppose to be in the directory ``examples``.
 
 ```bash
 git clone  https://github.com/ecies/rs-wasm
 ```
 
-We overwrite the example of ``ecies-wasm`` with our file ``example/index.js`` that uses the TLCS keys shown in this document and a simple hex to binary conversion function ``fromHexString``.
+We overwrite the example of ``ecies-wasm`` with our file ``example/js/index.js`` that uses the TLCS keys shown in this document and a simple hex to binary conversion function ``fromHexString``.
 We now suppose to be in the directory ``example``.
 
 ```bash
-cp index.js rs-wasm/example
+cp js/index.js rs-wasm/example
 ```
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect our TLCS keys.
 
@@ -115,8 +116,9 @@ Standard managament tools for ``X.509`` digital certificates require knowledge o
 We have been able to exploit the ``force_pubkey`` option in ``openssl`` to bypass this issue.
 
 The flow to use our TLCS system to create timed-certificates is the following.
-Firstly, we need to create a Certificate Authority (CA) pair that will be used to sign all users' certificates for all rounds.
+We now suppose to be in the directory ``examples/scripts/X.509``.
 
+Firstly, we need to create a Certificate Authority (CA) pair that will be used to sign all users' certificates for all rounds.
 This is done with the script ``setupCA.sh``:
 ```bash
 ./setupCA.sh CAsk.pem CApk.pem
@@ -173,21 +175,17 @@ First, the sender Alice needs to import the corresponding certificate ``user@gma
 Second, after having imported such certificate, Alice also needs to add ``CA.pem`` as trusted root certificate in her email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
 Finally, Alice can use her favourite email client to send an encrypted message to Bob's email address ``user@gmail.com``.
 
-
+We now suppose to be in the directory ``examples/scripts/X.509``.
 In order to be able to decrypt after round ``R``, Bob needs to perform the following operations.
 As shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples), Bob can compute the secret key ``sk.pem``.
 Then, Bob needs to compute the certificate ``user@gmail.com.p12`` output by the following script:
 ```bash
 ./sk2cert.sh sk.pem user@gmail.com CAsk.pem CA.pem
 ````
-Bob will be asked to input his own private data that should be equal to the data that Alice used to compute ``user@gmail.com.crt``. Moreover, Bob will be asked for a password to protect this private certificate. Then, Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS.
+Bob will be asked to input his own private data that should be equal to the data that Alice used to compute ``user@gmail.com.crt``.
+Then. Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS.
 
 Finally, after having imported such certificate, Bob also needs to add ``CA.pem`` as trusted root certificate in his email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
-
-#### Outlook with GpgOL plugin
-We successfully tested [gpg4](https://www.gpg4win.org/version4.html) with the ``Outlook`` email client.
-``gpg4`` comes with the ``Kleopatra`` app that allowed us to successfully import the certificate ``user@gmail.com.crt`` created as before and after importing it, we could send an encrypted email to ``user@gmail.com`` successfully.
-The email stayed encrypted until we imported the corresponding private certificate ``user@gmail.com.p12`` that allowed us to decrypt.
 
 #### Issues
 The issue to prevent all this to work inside email clients can be the support for ECC.
@@ -195,7 +193,7 @@ We also remark that while `openssl cms`` works, ``openssl smime`` does not. The 
 
 ### Using the so create digital certificates in Java to encrypt
 Consider the certificate ``user@gmail.com.crt`` created as above.
-We provide a sample Java code [ECIESfromCertificate.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIESfromCertificate.java) that works identically to [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/ECIES.java) except that the public key is taken by the certificate ``user@gmail.com.crt``.
+We provide a sample Java code [ECIESfromCertificate.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIESfromCertificate.java) that works identically to [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIES.java) except that the public key is taken by the certificate ``user@gmail.com.crt``.
 This can be useful in many libraries where the encryption procedure only accepts valid ``X.509`` certificates.
 Observe that for many applications such a certificate could be filled with fake data and containing as only useful information the round ``R`` to which it corresponds.
 
