@@ -203,7 +203,7 @@ We also remark that while `openssl cms`` works, ``openssl smime`` does not. The 
 
 ### Using the so create digital certificates in Java to encrypt
 Consider the certificate ``user@gmail.com.crt`` created as above.
-We provide a sample Java code [ECIESfromCertificate.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIESfromCertificate.java) that works identically to [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIES.java) except that the public key is taken by the certificate ``user@gmail.com.crt``.
+We provide a sample Java code [ECIESfromCertificate.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIESfromCertificate.java) that works identically to [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIES.java) except that the public key is taken from the certificate ``user@gmail.com.crt``.
 This can be useful in many libraries where the encryption procedure only accepts valid ``X.509`` certificates.
 You should edit in the code the path to the certificate ``user@gmail.crt`` and secret key ``sk.pkcs8``.
 Observe that for many applications such a certificate could be filled with fake data and containing as only useful information the round ``R`` to which it corresponds.
