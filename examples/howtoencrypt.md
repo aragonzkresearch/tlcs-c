@@ -127,15 +127,15 @@ This is done with the script ``setupCA.sh``:
 The CA's secret key is now in ``CAsk.pem`` and the certificate is in ``CApk.pem``. The command will ask to input the data of the certification authority.
 
 Suppose that Alice wants to send an encrypted message for round ``R`` to Bob whose email address is ``user@gmail.com``.
+Suppose that `T` is the time corresponding to round `R`, e.g. `T` is equal to `12/13/2023` (the time is an exact date in the format ``MM/DD/YYYY`).
 We assume the file ``pk.pem`` is created from the public key for round ``R`` as shown [before](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md#openssl-examples).
 When the public key ``pk.pem`` for round ``R`` is available, Alice can run the following script:
 ```bash
-./pk2cert.sh pk.pem user@gmail.com CAsk.pem CA.pem
+./pk2cert.sh pk.pem user@gmail.com CAsk.pem CA.pem 12/13/2023
 ````
-The command will ask Alice to input the data corresponding to the certificate you are creating such as Country, Organization, etc.
-The output certificate will be user@gmail.com.crt.
+The command will ask Alice to input the data corresponding to the certificate you are creating such as Country, Organization, etc. Specifically Alice can edit this info from a file that will be opened by the script via ``vim`` command (type ``:x`` to exit from ``vim`` when you finish to edit).
+The output certificate will be ``user@gmail.com.crt`` and will have validity until ``12/13/2023`` or the time ``T`` you choose.
 
-Notice that we could encode the round ``R`` in one of the certificate fields, in this case each user certificate would be bound to a specific time.
 ### Encrypted emails from command line
 Now, Alice can encrypt an email with content "ciao" to this recipient with the following command:
 ```bash
@@ -184,7 +184,7 @@ Then, Bob needs to compute the certificate ``user@gmail.com.p12`` output by the 
 ./sk2cert.sh sk.pem user@gmail.com CAsk.pem CA.pem
 ````
 Bob will be asked to input his own private data that should be equal to the data that Alice used to compute ``user@gmail.com.crt``.
-Then. Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS.
+Then, Bob must import such certificate ``user@gmail.com.p12`` in his own email client or OS. The default password Bob should input is ``timelock.zone``. Observe that there is no need for any secure password since after round ``R`` anyone can publicly compute such a certificate.
 
 Finally, after having imported such certificate, Bob also needs to add ``CA.pem`` as trusted root certificate in his email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
 
