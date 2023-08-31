@@ -12,15 +12,17 @@ if [ "$#" -ne 4 ]; then
 fi
 
 #Create a certificate signing request:
-./setup.sh tempsk.pem temppk.pem
-cp extension_file.conf extension_file_$1.conf
-vi extension_file_$1.conf
-openssl req -new  -key tempsk.pem -out $2.csr.crt -config extension_file_$1.conf
+../setup.sh tempsk.pem temppk.pem
+cp extension_file.conf extension_file_$2.conf
+sed -i s/EMAIL/$2/g extension_file_$2.conf
+vi extension_file_$2.conf
+openssl req -new  -key tempsk.pem -out $2.csr.crt -config extension_file_$2.conf
 echo "CSR created"
 
 #Finally we create our timelock.zone.crt certificate.
-openssl x509 -req -days 365 -in $2.csr.crt -force_pubkey $1 -out $2.crt -CA $4 -CAkey $3 -CAcreateserial -extfile extension_file_$1.conf -extensions v3_req
+openssl x509 -req -days 365 -in $2.csr.crt -force_pubkey $1 -out $2.crt -CA $4 -CAkey $3 -CAcreateserial -extfile extension_file_$2.conf -extensions v3_req
 echo "Certificate created"
 rm temppk.pem
 rm tempsk.pem
-rm extension_file_$1.conf
+rm extension_file_$2.conf
+# We do not delete the CSR $2.csr.crt. If you need you can send it to a real CA to get a valid certificate. In this case you will not need to set in your system CA.pem as trusted CA's certificate
