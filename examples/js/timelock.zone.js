@@ -40,26 +40,18 @@ if (month2 < 10) {
 } 
 
 const futuredate=day+month2+year;
-// convert date in round R and retrieve pk for round R
+// convert date into round Round
 const date=new Date(month2+"/"+day+"/"+year);
 var ut=parseInt((date.getTime() / 1000).toFixed(0));
 var Round=parseInt((ut-drandgenesistime)/3).toFixed(0);
+// TODO: we should use Round to retrieve the public key for round R and store it in pk
+// for the moment we assume that pk contains public key for round R
  
- const pk=fromHexString("03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD"); // this string a the public key from the TLCS service for a round R
-  const encrypted = ecies.encrypt(pk, data);
+const pk=fromHexString("03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD"); 
+const encrypted = ecies.encrypt(pk, data);
 
 document.getElementById('enc').value="This is an encrypted message to the future. To decrypt it you need to go to timelock.zone/enc.html, Go to the \"Decryption Page\", and paste the following string:\n"+ futuredate+toBase64(encrypted);
-  /* 
-const sk=fromHexString("9C8FC8D70B437C5545B71961DBBFDE3A3F59F53129E7B872FEA2E8BFC69EFBC7"); 
- const decrypted = ecies.decrypt(sk,fromBase64(toBase64(encrypted)));
 
-
-  if (decrypted.toString("hex") === data.toString("hex")) {
-  alert(`decrypted: ${decoder.decode(decrypted)}`);
-  } else {
-    alert("Decryption failed");
-  }
-*/
 var copyText = document.getElementById("enc");
 
   // Select the text field
@@ -85,9 +77,11 @@ if (date.setHours(0,0,0,0)> today.setHours(0,0,0,0)) {
 alert("You must wait until "+date+" to decrypt");
 return;
 }
-// use datestr to retrieve the sk for round R
+// convert date into round Round 
 var ut=parseInt((date.getTime() / 1000).toFixed(0))
 var Round=parseInt((ut-drandgenesistime)/3).toFixed(0);
+// TODO: we should use Round to retrieve the public key for round R and store it in pk
+// for the moment we assume that pk contains public key for round R
 
 const sk=fromHexString("9C8FC8D70B437C5545B71961DBBFDE3A3F59F53129E7B872FEA2E8BFC69EFBC7"); 
 const encrypted = document.getElementById('ct').value.slice(8);
