@@ -64,9 +64,22 @@ For the secret key, you can convert the secret key ``sk.pem`` generated before i
 openssl pkcs8 -topk8  -in sk.pem -out sk.pkcs8 -nocrypt
 ```
 With these two files, you can use ``ECIES.java`` in a straightforward way.
-The code also works in Android if the right provider (e.g., Bouncycastle) is installed.
-You should edit in the code the path to the public key ``pk.pem`` and secret key ``sk.pkcs8``.
+### Android
+The crypto part of the code also works in Android with the following few modifications needed to install the right provider (e.g., Bouncycastle).
+Add the following to the ``dependencies`` section of your ``gradle`` files:
+```bash
+implementation("com.madgag.spongycastle:core:1.54.0.0")
+implementation ("com.madgag.spongycastle:prov:1.54.0.0")
+implementation("com.madgag.spongycastle:pkix:1.54.0.0")
+implementation( "com.madgag.spongycastle:pg:1.54.0.0")
+```
+Then, before you use any crypto code you should add the following line to your Java program:
+```bash
+Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+```
+Everything should then work straightforward.
 
+We have been able to test some sample Android app that encrypts and decrypts successfully with respect to TLCS keys.
 ## Python
 In Python, consider the packages [eciespi](https://pypi.org/project/eciespy/) of the ``PyPi`` library.
 You can install it with:
