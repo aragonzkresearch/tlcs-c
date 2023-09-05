@@ -21,6 +21,27 @@ import javax.print.DocFlavor.URL;
 public class ECIES
 {
 
+
+  private static String toString(
+        byte[] bytes,
+        int    length)
+    {
+        char[]	chars = new char[length];
+        
+        for (int i = 0; i != chars.length; i++)
+        {
+            chars[i] = (char)(bytes[i] & 0xff);
+        }
+        
+        return new String(chars);
+    }
+
+  private static String toString(
+        byte[]	bytes)
+    {
+        return toString(bytes, bytes.length);
+    }
+
   private static byte[] loadPEM (String resource) throws IOException
   {
     File file = new File (resource);
@@ -68,7 +89,7 @@ public class ECIES
 	iesCipher2.update (cipherText, 0, ctlength, plainText2, 0);
         ctlength2 += iesCipher2.doFinal (plainText2, ctlength2);
         System.out.println ("decrypted plaintext: " +
-			    Utils.toString (plainText2));
+			    ECIES.toString (plainText2));
     } catch (InvalidKeySpecException | IOException e)
     {
       e.printStackTrace ();
