@@ -80,6 +80,7 @@ Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider
 Everything should then work straightforward.
 
 We have been able to test some sample Android app that encrypts and decrypts successfully with respect to TLCS keys.
+An example of an Android app using TLCS and timelock.zone can be found [here](https://github.com/vincenzoiovino/Timelock.zone.AndroidExample/tree/master).
 ## Python
 In Python, consider the packages [eciespi](https://pypi.org/project/eciespy/) of the ``PyPi`` library.
 You can install it with:
