@@ -1,4 +1,4 @@
-# How to use our system to encrypt
+# How to use TLCS
 
 ## Encrypt with Openssl tools and libraries
 In the files `examples/scripts/setup.sh`,  `examples/scripts/encrypt.sh` and `examples/scripts/decrypt.sh` we provided a complete public key encryption system based on openssl. Precisely, we implement the [Integrated Encryption Sscheme (IES)](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme) public key encryption scheme with respect to the curve ``secp256k1`` and using ``aes256`` as symmetric encryption scheme and ``pbkdf2`` as key derivation function.
@@ -80,7 +80,7 @@ Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider
 Everything should then work straightforward.
 
 We have been able to test some sample Android app that encrypts and decrypts successfully with respect to TLCS keys.
-An example of an Android app using TLCS and timelock.zone can be found [here](https://github.com/vincenzoiovino/Timelock.zone.AndroidExample/tree/master).
+An example of an Android app using TLCS and [timelock.zone](https://timelock.zone) can be found [here](https://github.com/vincenzoiovino/Timelock.zone.AndroidExample/tree/master).
 ## Python
 In Python, consider the packages [eciespi](https://pypi.org/project/eciespy/) of the ``PyPi`` library.
 You can install it with:
@@ -225,6 +225,9 @@ We provide a sample Java code [ECIESfromCertificate.java](https://github.com/ara
 This can be useful in many libraries where the encryption procedure only accepts valid ``X.509`` certificates.
 You should edit in the code the path to the certificate ``user@gmail.crt`` and secret key ``sk.pkcs8``.
 Observe that for many applications such a certificate could be filled with fake data and containing as only useful information the round ``R`` to which it corresponds.
+
+## TLCS plugin for MS Windows 
+In [timelock.fs](https://github.com/vincenzoiovino/timelock.fs) we implement an extension for MS Windows that enables to encrypt to the future and decrypt any file.
 
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that we showed that the public and secret keys offered by our system can be converted in known formats and so can be used by virtually all crypto libraries.
