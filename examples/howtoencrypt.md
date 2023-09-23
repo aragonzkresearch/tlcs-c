@@ -56,8 +56,9 @@ The previous scripts can be also ported in all programming languages in which th
 We assume the availability of the files  ``pk.pem`` and ``sk.pem`` as computed above.
 Unfortunately, the standard Java Crypto Architecture (JCA) may not support elliptic curve cryptography (ECC). However, ECC is usually done using the famous [bouncycastle](https://www.bouncycastle.org/) provider.
 Your Java code may not depend at all from the specific provider you use, it will be the JCA to select the best provider that in your system offers ECC but be aware that if you do not have any provider at all that supports ECC, JCA will raise an error.
+Disclaimer: the examples we show next are working for an older versions of bouncycastle (provider [``bcprov-jdk15on-168`](https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on/1.58)). For newer versions, the usage can slightly change. see comments [here](https://github.com/vincenzoiovino/timelock.fs/blob/main/src/timelockfs/timelockfs.java). 
 
-As an example, in [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIES.java) we show an implementation of the ECIES public key encryption scheme in Java (it may need the ``bouncycastle`` provider to run successfully) that assumes public key in PEM format and secret key in ``pkcs8`` format.
+As an example, in [ECIES.java](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/Java/ECIES.java) we show an implementation of (one of the variants of) the ECIES public key encryption scheme in Java (it may need the ``bouncycastle`` provider to run successfully) that assumes public key in PEM format and secret key in ``pkcs8`` format.
 You can use the public key in PEM format generated using the program ``rawpk2pem`` as shown before.
 For the secret key, you can convert the secret key ``sk.pem`` generated before in ``pkcs8`` format as shown in the following command:
 ```bash
