@@ -58,8 +58,8 @@ At time corresponding to round number `T`, LOE publishes a signature for the rou
 The previous command simulates the inversion phase in which after time corresponding to round `T` we aim at inverting the aggregated public key contained in the file `aggregated_pk`. To this purpose we pass as input to the latter program the file `proof` that contains the public keys of all parties who participated in the protocol and their respective proofs, the aggregate public key file `aggregated_pk` and, in our example, the list of 0/1 values `1 1` to indicate that the file `proof` contains two proofs that are both accepted.
 The program will ask for you for the signature of LOE of round `T` and should print out the secret key corresponding to the aggregated public key in the file `aggregated_pk`.
 
-## How to encrypt with our system
-See [Encryption Usage](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md) for examples on how to use our system to encrypt.
+## How to use our TLCS system
+See our [How to Use](https://github.com/aragonzkresearch/tlcs-c/blob/main/examples/howtoencrypt.md) page for examples on how to use our system to encrypt.
 
 ## Contacts
 
