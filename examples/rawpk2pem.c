@@ -31,6 +31,8 @@ len=strlen(argv[2])/2;
   EC_KEY_set_asn1_flag(eck, OPENSSL_EC_NAMED_CURVE); 
   const unsigned char *ptr = raw;
   if( !o2i_ECPublicKey (&eck, &ptr, sizeof(raw)) ) err("o2iECPublic=point");
+
+	EC_KEY_set_conv_form(eck,  POINT_CONVERSION_UNCOMPRESSED);
   EVP_PKEY * pkey = EVP_PKEY_new(); 
   if( !EVP_PKEY_assign_EC_KEY(pkey, eck) ) err("PKEYassign");
 

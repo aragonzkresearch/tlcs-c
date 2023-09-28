@@ -57,12 +57,12 @@ public class ECIESfromCertificate
   public static void main (String[]args) throws Exception, IOException
   {
 
-    String name = "secp256k1";	// type of elliptic curve, other examples secp256r1
     String plainText = "Ciao";
-    KeyFactory kf = KeyFactory.getInstance ("ECDH");
-    Cipher iesCipher = Cipher.getInstance ("ECIES");
 
-      try
+    KeyFactory kf = KeyFactory.getInstance ("ECDH"); // by default bouncycastle will select secp256k1 as EC
+    Cipher iesCipher = Cipher.getInstance ("ECIES"); // you can replace this with more secure instantiations of ECIES like "ECIESwithSHA256" etc.
+     
+	 try
     {
 
 
