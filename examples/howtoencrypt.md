@@ -189,7 +189,7 @@ Bob can now run the following script to decrypt and get the string "ciao":
 openssl cms -decrypt -in ct.p7m -CAfile CA.pem  -inkey sk.pem
 ```
 ### Encrypted emails from email clients
-Virtually, it should be possible to integrate this with email clients in the following way.
+Virtually, it should be possible to integrate this with email clients in the following way, and in fact we have been to successfully experiment what follows with the   [``GPGOL``](https://www.gpg4win.org/doc/en/gpg4win-compendium_33.html#:~:text=Outlook%20itself%20also%20supports%20X.509%20and%20S%2FMIME%2C%20but,Outlook%20itself%20does%20not%20offer%20any%20OpenPGP%20support.) plugin for ``MS Outlook``.
 Suppose that Alice wants to send an encrypted message for round ``R`` to Bob whose email address is ``user@gmail.com``.
 First, the sender Alice needs to import the corresponding certificate ``user@gmail.com.crt`` as shown before.
 Second, after having imported such certificate, Alice also needs to add ``CA.pem`` as trusted root certificate in her email system (or OS) so that the certificate ``user@gmail.com.p12`` looks as coming from a trusted source.
