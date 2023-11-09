@@ -116,8 +116,8 @@ We now suppose to be in the directory ``examples``.
 ```bash
 git clone  https://github.com/ecies/rs-wasm
 ```
-
-We first copy the files ``examples/js/timelock.zone.js``, ``examples/js/timelock.zone.lib.js`` and ``index.html`` (overwriting the existing ones) into the directory ``rs-wasm/example``.
+Download the file `timelock.lib.js` from  [here](https://github.com/vincenzoiovino/TimeLockJavaScriptAPI/blob/main/src/timelock.zone.lib.js) and copy it into the folder `examples/js`. A (possibly non-updated version) of the latter file is also provided in this repository in the same folder.
+Then copy the files ``examples/js/timelock.zone.js``, ``examples/js/timelock.zone.lib.js`` and ``index.html`` (overwriting the existing ones) into the directory ``rs-wasm/example``.
 The files implement a webpage with a fully working encrypt to the future and decrypt webpage using live ``timelock.zone`` keys.
 
 ```bash
@@ -127,7 +127,6 @@ cp js/index.html rs-wasm/example
 ```
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect to ``timelock.zone`` keys.
 
-The script ``examples/js/timelock.zone.lib.js`` is taken from the [timelock.zone javascript](https://github.com/vincenzoiovino/TimeLockJavaScriptAPI/tree/main) repository. Use the latter for an updated library.
 
 ![screenshot1](images/screenshot1.png)
 ![screenshot2](images/screenshot2.png)
