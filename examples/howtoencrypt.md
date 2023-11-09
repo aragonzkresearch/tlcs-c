@@ -126,6 +126,8 @@ cp js/index.html rs-wasm/example
 ```
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect to ``timelock.zone`` keys.
 
+The script ``examples/js/timelock.zone.lib.js`` is taken from the [timelock.zone javascript](https://github.com/vincenzoiovino/TimeLockJavaScriptAPI/tree/main) repository. Use the latter for an updated library.
+
 ![screenshot1](images/screenshot1.png)
 ![screenshot2](images/screenshot2.png)
 ## Encrypted emails and digital certificates
