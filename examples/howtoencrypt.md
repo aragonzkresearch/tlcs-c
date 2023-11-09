@@ -117,15 +117,14 @@ We now suppose to be in the directory ``examples``.
 git clone  https://github.com/ecies/rs-wasm
 ```
 
-We first copy the files ``examples/js/timelock.zone.js`` and ``index.html`` (overwriting the existinge one) into the directory ``rs-wasm/example``.
-The files implement a webpage with a fully working encrypt to the future and decrypt webpage using fixed TLCS keys.
-The library can be easily tweaked to retrieve real keys from the timelock.zone service (see the comments in the code).
+We first copy the files ``examples/js/timelock.zone.js``, ``examples/js/timelock.zone.lib.js`` and ``index.html`` (overwriting the existing ones) into the directory ``rs-wasm/example``.
+The files implement a webpage with a fully working encrypt to the future and decrypt webpage using live ``timelock.zone`` keys.
 
 ```bash
 cp js/timelock.zone.js rs-wasm/example
 cp js/index.html rs-wasm/example
 ```
-You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect our TLCS keys.
+You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect to ``timelock.zone`` keys.
 
 ![screenshot1](images/screenshot1.png)
 ![screenshot2](images/screenshot2.png)
