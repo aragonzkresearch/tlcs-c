@@ -122,6 +122,7 @@ The files implement a webpage with a fully working encrypt to the future and dec
 
 ```bash
 cp js/timelock.zone.js rs-wasm/example
+cp js/timelock.zone.lib.js rs-wasm/example
 cp js/index.html rs-wasm/example
 ```
 You can now follow the instructions given [here](https://github.com/ecies/rs-wasm/tree/master/example) to run a server that uses the example (now, our overwritten example) to encrypt and decrypt with respect to ``timelock.zone`` keys.
