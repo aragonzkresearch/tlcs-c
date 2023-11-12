@@ -56,8 +56,6 @@ function Enc() {
     //var ut=parseInt((date.getTime() / 1000).toFixed(0));
     //var Round=parseInt((ut-DRAND_GENESIS_TIME)/DRAND_FREQUENCY).toFixed(0);
     const Round = DayToRound(futuredateobj);
-    // TODO: we should use Round to retrieve the public key for round R and store it in pk
-    // for the moment we assume that pk contains public key for round R
 
     //const pk=fromHexString("03E1AC8DB6A8D669BDD5753882A339273A864E113268156454F0107C25D0AC9ECD"); 
     //const pk=fromHexString("02972033bfc518338f7e94d93432a34a398e13ea4941c98b945a9aaff2b6b88088"); 
