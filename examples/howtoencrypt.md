@@ -231,6 +231,9 @@ Observe that for many applications such a certificate could be filled with fake 
 ## TLCS plugin for MS Windows 
 In [timelock.fs](https://github.com/vincenzoiovino/timelock.fs) we implement an extension for MS Windows that enables to encrypt to the future and decrypt any file.
 
+## TLCS for public disclosure over Ethereum
+In [timelock.public.disclosure](https://github.com/vincenzoiovino/timelock.public.disclosure) we implement a public disclosure system for Ethereum in which the user can timelock encrypt a text, additionally using a password, and decrypt it at the given time. The GAS cost is minimal (about 67k) thanks to a trick that allows to compress ciphertext with short links without comprising the privacy.
+
 ## Other frameworks
 We will soon show examples on how to use our TLCS system with other libraries and development frameworks. For the moment, observe that we showed that the public and secret keys offered by our system can be converted in known formats and so can be used by virtually all crypto libraries.
 
