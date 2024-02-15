@@ -10,7 +10,7 @@ const DRAND_FREQUENCY = 3;
 
 async function getPublicKeyfromUrl(Round, Scheme) {
     try {
-        return await fetch("https://demo.timelock.zone/tlcs/timelock/v1beta1/keypairs/round_and_scheme/" + Round + "/" + SchemesMap.get(Scheme)).then(t => t.text()).then(function(JsonObj) {
+        return await fetch("https://api.timelock.zone/tlcs/timelock/v1beta1/keypairs/round_and_scheme/" + Round + "/" + SchemesMap.get(Scheme)).then(t => t.text()).then(function(JsonObj) {
             return JSON.parse(JsonObj).keypairs[0].public_key;
 
         });
@@ -22,7 +22,7 @@ async function getPublicKeyfromUrl(Round, Scheme) {
 
 async function getSecretKeyfromUrl(Round, Scheme) {
     try {
-        return await fetch("https://demo.timelock.zone/tlcs/timelock/v1beta1/keypairs/round_and_scheme/" + Round + "/" + SchemesMap.get(Scheme)).then(t => t.text()).then(function(JsonObj) {
+        return await fetch("https://api.timelock.zone/tlcs/timelock/v1beta1/keypairs/round_and_scheme/" + Round + "/" + SchemesMap.get(Scheme)).then(t => t.text()).then(function(JsonObj) {
             return JSON.parse(JsonObj).keypairs[0].private_key;
 
         });
